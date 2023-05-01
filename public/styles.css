@@ -1,1 +1,29 @@
 /* TODO: Add file header */
+
+ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+header li {
+  float: left;
+}
+
+nav, .filter-card-view {
+  display: flex;
+}
+
+header li > a {
+  display: block;
+  padding: 8px;
+}
+
+.filter-card-view {
+  flex-wrap: wrap;
+}
+
+.filter-card-view li {
+  height: 48px;
+  width: 48px;
+}

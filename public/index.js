@@ -1,9 +1,9 @@
 /**
- * Name: Simon Studen and Vincent Kao
- * Date: May 1st, 2023
- * Section: CSE 154 Section AA and AG
+ * Name: _your name here_
+ * Date: _add date here_
+ * Section: CSE 154 _your section here_
  *
- * TODO: -- your description of what this file does here --
+ * -- your description of what this file does here --
  * Do not keep comments from this template in any work you submit (functions included under "Helper
  * functions" are an exception, you may keep the function names/comments of id/qs/qsa/gen)
  */
@@ -22,7 +22,7 @@
    * CHANGE: Describe what your init function does here.
    */
   function init() {
-    let pokeball = id();
+
   }
 
   /**
