@@ -1,0 +1,15 @@
+{
+  "name": "fp-partner-hkao79-sstuden",
+  "version": "1.0.0",
+  "description": "CSE 154 Final Project",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@gitlab.cs.washington.edu:cse154-23sp-students/fp-partner-hkao79-sstuden.git"
+  },
+  "author": "Simon Studen, Vincent Kao",
+  "license": "ISC"
+}
