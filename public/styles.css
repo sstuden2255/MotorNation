@@ -1,5 +1,33 @@
 /* TODO: Add file header */
 
+
+body {
+  font-family: 'Dela Gothic One', cursive;
+}
+
+header {
+  background-color: #FFED66;
+  padding: 50px;
+}
+
+.search-bar-container {
+  width: 100%;
+  display: flex;
+}
+
+.search-bar-container input[type=text] {
+  padding: 10px;
+  border: none;
+  font-size: 17px;
+  width: 90%;
+}
+
+.search-bar-container button {
+  background-color: white;
+  border: none;
+  font-family: 'Dela Gothic One', cursive;
+}
+
 ul {
   list-style-type: none;
   margin: 0;
@@ -10,8 +38,18 @@ header li {
   float: left;
 }
 
+header > nav > a {
+  align-items: flex-start;
+}
+
+header > nav > ul {
+  align-self: flex-end;
+}
+
 nav, .filter-card-view {
   display: flex;
+  justify-content: space-evenly;
+  align-items: center;
 }
 
 header li > a {
@@ -21,9 +59,13 @@ header li > a {
 
 .filter-card-view {
   flex-wrap: wrap;
+  background-color: #575A5E;
+  margin: 10px;
 }
 
-.filter-card-view li {
-  height: 48px;
-  width: 48px;
+.card-view {
+  height: 256px;
+  width: 256px;
+  margin: 20px;
+  background-color: darkgray;
 }
