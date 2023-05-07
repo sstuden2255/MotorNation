@@ -1,15 +1,22 @@
-/* TODO: Add file header */
-
+/*
+ * Names: Simon Studen, Vincent Kao
+ * Date: May 1, 2023
+ * Section: CSE 154
+ *
+ * this is the css file for our final project and has a yellow and monochromatic
+ * black-white color scheme, it will style the filters to the left and main
+ * content of the page to the right
+ */
 
 body {
   font-family: 'Dela Gothic One', cursive;
   background-color: #FFED66;
   text-align: center;
-  position: relative; /* thisss */
+  position: relative;
 }
 
 /* header styles */
-/*----------------------------------------------------------------------------*/
+/* ------------------------------------------------------------------------- */
 header {
   background-color: black;
   color: white;
@@ -18,10 +25,6 @@ header {
   padding: 10px;
   display: flex;
   flex-direction: column;
-}
-
-header h1 {
-  text-shadow: 0 0 1em white;
 }
 
 header nav {
@@ -35,13 +38,12 @@ header nav div {
 }
 
 .search-bar-container {
-  width: 100%;
   display: flex;
   width: 90%;
   margin: auto;
 }
 
-.search-bar-container input[type=text] {
+.search-bar-container input[type="text"] {
   padding: 10px;
   border: none;
   font-size: 17px;
@@ -75,6 +77,7 @@ header h1, header p {
 
 header h1 {
   font-size: 32pt;
+  text-shadow: 0 0 1em white;
 }
 
 header p {
@@ -113,7 +116,7 @@ header li > a {
 }
 
 /* main styles */
-/*----------------------------------------------------------------------------*/
+/* ------------------------------------------------------------------------- */
 #main-container {
   display: flex;
   width: 95%;
@@ -142,7 +145,7 @@ header li > a {
   border-radius: 2em;
 }
 
- #filter-container button {
+#filter-container button {
   height: 50px;
   width: 100%;
   background-color: white;
@@ -165,7 +168,6 @@ header li > a {
 #vehicles-view {
   display: flex;
   background-color: #d4d4d4;
-  margin-top: 20px;
   margin-bottom: 20px;
   width: 70%;
   margin-top: 5%;

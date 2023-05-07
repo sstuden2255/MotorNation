@@ -1,18 +1,16 @@
 /**
- * Name: _your name here_
- * Date: _add date here_
- * Section: CSE 154 _your section here_
+ * Names: Simon Studen, Vincent Kao
+ * Date: May 1, 2023
+ * Section: CSE 154
  *
- * -- your description of what this file does here --
- * Do not keep comments from this template in any work you submit (functions included under "Helper
- * functions" are an exception, you may keep the function names/comments of id/qs/qsa/gen)
+ * this is the js file for our final project and will determine the behavior of
+ * our vehicle-selling website including filters and more
  */
 "use strict";
 
 (function() {
 
   // MODULE GLOBAL VARIABLES, CONSTANTS, AND HELPER FUNCTIONS CAN BE PLACED HERE
-  let login;
   /**
    * Add a function that will be called when the window is loaded.
    */
@@ -22,18 +20,20 @@
    * CHANGE: Describe what your init function does here.
    */
   function init() {
-    login = false;
     let filterButton = qs("#filter-container form");
     filterButton.addEventListener("submit", function(evt) {
       evt.preventDefault();
       getVehicles();
-    })
+    });
 
     filterBehavior();
   }
 
+  /**
+   * get data of vehicles from API
+   */
   function getVehicles() {
-    //get from api
+    // get from api
   }
 
   /**
@@ -73,19 +73,9 @@
     for (let i = 1; i < typeButtons.length; i++) {
       if (!typeButtons[i].checked) {
         allChecked = false;
-        break;
       }
     }
     qs("#type-filter input").checked = allChecked;
-  }
-
-  /**
-   * Make sure to always add a descriptive comment above
-   * every function detailing what it's purpose is
-   * Use JSDoc format with @param and @return.
-   */
-  function exampleFunction1() {
-    /* SOME CODE */
   }
 
   /**
@@ -110,9 +100,9 @@
    * @param {string} idName - element ID
    * @returns {object} DOM object associated with id.
    */
-  function id(idName) {
+  /** function id(idName) {
     return document.getElementById(idName);
-  }
+  } **/
 
   /**
    * Returns the first element that matches the given CSS selector.
@@ -137,19 +127,19 @@
    * @param {string} tagName - HTML tag name for new DOM element.
    * @returns {object} New DOM object for given HTML tag.
    */
-  function gen(tagName) {
+  /** function gen(tagName) {
     return document.createElement(tagName);
-  }
+  } **/
 
   /**
-   *
-   *
-   *
+   * Checks status from API response and throws error if needed   *
+   * @param {Response} res - response from API
+   * @returns {Response} response from API
    */
-  async function statusCheck(res) {
+  /** async function statusCheck(res) {
     if (!res.ok) {
       throw new Error(await res.text());
     }
     return res;
-  }
+  } **/
 })();
