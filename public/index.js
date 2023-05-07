@@ -32,8 +32,15 @@
   /**
    * get data of vehicles from API
    */
-  function getVehicles() {
-    // get from api
+  async function getVehicles() {
+    try {
+      let resp = await fetch("abc");
+      await statusCheck(response);
+    } catch (err) {
+      let txt = gen("p");
+      let board = id("main-container");
+      board.appendChild(txt);
+    }
   }
 
   /**
@@ -78,17 +85,6 @@
     qs("#type-filter input").checked = allChecked;
   }
 
-  /**
-   * Make sure to always add a descriptive comment above
-   * every function detailing what it's purpose is
-   * @param {variabletype} someVariable This is a description of someVariable, including, perhaps, preconditions.
-   * @returns {returntype} A description of what this function is actually returning
-   */
-  function exampleFunction2(someVariable) {
-    /* SOME CODE */
-    return something;
-  }
-
   /** ------------------------------ Helper Functions  ------------------------------ */
   /**
    * Note: You may use these in your code, but remember that your code should not have
@@ -100,9 +96,9 @@
    * @param {string} idName - element ID
    * @returns {object} DOM object associated with id.
    */
-  /** function id(idName) {
+  function id(idName) {
     return document.getElementById(idName);
-  } **/
+  }
 
   /**
    * Returns the first element that matches the given CSS selector.
@@ -127,19 +123,19 @@
    * @param {string} tagName - HTML tag name for new DOM element.
    * @returns {object} New DOM object for given HTML tag.
    */
-  /** function gen(tagName) {
+  function gen(tagName) {
     return document.createElement(tagName);
-  } **/
+  }
 
   /**
    * Checks status from API response and throws error if needed   *
    * @param {Response} res - response from API
    * @returns {Response} response from API
    */
-  /** async function statusCheck(res) {
+  async function statusCheck(res) {
     if (!res.ok) {
       throw new Error(await res.text());
     }
     return res;
-  } **/
+  }
 })();
