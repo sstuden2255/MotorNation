@@ -35,7 +35,7 @@
   async function getVehicles() {
     try {
       let resp = await fetch("abc");
-      await statusCheck(response);
+      await statusCheck(resp);
     } catch (err) {
       let txt = gen("p");
       let board = id("main-container");
