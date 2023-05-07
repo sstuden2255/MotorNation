@@ -3,23 +3,49 @@
 
 body {
   font-family: 'Dela Gothic One', cursive;
+  background-color: #FFED66;
+  text-align: center;
+  position: relative; /* thisss */
 }
 
+/* header styles */
+/*----------------------------------------------------------------------------*/
 header {
-  background-color: #FFED66;
-  padding: 50px;
+  background-color: black;
+  color: white;
+  height: 12em;
+  width: 100%;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+}
+
+header h1 {
+  text-shadow: 0 0 1em white;
+}
+
+header nav {
+  margin-top: 0;
+}
+
+header nav div {
+  display: flex;
+  align-items: center;
+  text-align: left;
 }
 
 .search-bar-container {
   width: 100%;
   display: flex;
+  width: 90%;
+  margin: auto;
 }
 
 .search-bar-container input[type=text] {
   padding: 10px;
   border: none;
   font-size: 17px;
-  width: 90%;
+  width: 100%;
 }
 
 .search-bar-container button {
@@ -28,10 +54,31 @@ header {
   font-family: 'Dela Gothic One', cursive;
 }
 
+.search-bar-container button:hover {
+  background-color: lightgrey;
+}
+
 ul {
   list-style-type: none;
   margin: 0;
   padding: 0;
+}
+
+header img {
+  height: 8em;
+}
+
+header h1, header p {
+  font-family: "Impact", sans-serif;
+  font-weight: 100;
+}
+
+header h1 {
+  font-size: 32pt;
+}
+
+header p {
+  font-size: 16pt;
 }
 
 header li {
@@ -42,14 +89,22 @@ header > nav > a {
   align-items: flex-start;
 }
 
-header > nav > ul {
-  align-self: flex-end;
+nav > a:link, nav > a:visited, nav > a:hover, nav > a:active {
+  text-decoration: none;
+  color: white;
 }
 
-nav, .filter-card-view {
+header > nav > ul > li:hover {
+  background-color: #ffe414;
+}
+
+nav, .filter-card-view, .card-view {
   display: flex;
-  justify-content: space-evenly;
   align-items: center;
+}
+
+nav {
+  justify-content: space-between;
 }
 
 header li > a {
@@ -57,15 +112,86 @@ header li > a {
   padding: 8px;
 }
 
-.filter-card-view {
+/* main styles */
+/*----------------------------------------------------------------------------*/
+#main-container {
+  display: flex;
+  width: 95%;
   flex-wrap: wrap;
-  background-color: #575A5E;
-  margin: 10px;
+  margin: auto;
+  align-items: flex-start;
 }
 
-.card-view {
-  height: 256px;
-  width: 256px;
-  margin: 20px;
+#type-container, #price-container {
+  background-color: white;
+  margin: 30px;
+}
+
+#filter-container {
+  background-color: #d4d4d4;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  align-self: flex-start;
+  width: 20%;
+  margin-top: 5%;
+  margin-right: 5%;
+  padding: 15px;
+  border: 5px solid black;
+  border-radius: 2em;
+}
+
+ #filter-container button {
+  height: 50px;
+  width: 100%;
+  background-color: white;
+  border-radius: 0.5em;
+  font-family: 'Dela Gothic One', cursive;
+}
+
+#filter-container button:hover {
+  background-color: black;
+  color: white;
+}
+
+#type-filter, #price-filter {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-bottom: 50px;
+}
+
+#vehicles-view {
+  display: flex;
+  background-color: #d4d4d4;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  width: 70%;
+  margin-top: 5%;
+  border: 5px solid black;
+  border-radius: 2em;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
+  align-items: flex-start;
+}
+
+.vehicle-card {
+  height: 254px;
+  width: 254px;
   background-color: darkgray;
+  margin: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.vehicle-card:hover {
+  background-color: rgb(90, 90, 90);
+}
+
+main a:link, main a:visited, main a:hover, main a:active {
+  text-decoration: none;
+  color: black;
 }

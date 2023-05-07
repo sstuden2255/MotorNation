@@ -12,7 +12,7 @@
 (function() {
 
   // MODULE GLOBAL VARIABLES, CONSTANTS, AND HELPER FUNCTIONS CAN BE PLACED HERE
-
+  let login;
   /**
    * Add a function that will be called when the window is loaded.
    */
@@ -22,7 +22,61 @@
    * CHANGE: Describe what your init function does here.
    */
   function init() {
+    login = false;
+    let filterButton = qs("#filter-container form");
+    filterButton.addEventListener("submit", function(evt) {
+      evt.preventDefault();
+      getVehicles();
+    })
 
+    filterBehavior();
+  }
+
+  function getVehicles() {
+    //get from api
+  }
+
+  /**
+   * Set up how inputs for filters should behave
+   */
+  function filterBehavior() {
+    let allTypeButton = qs("#type-filter input");
+    allTypeButton.addEventListener("click", changeTypeButtons);
+
+    let typeButtons = qsa("#type-filter input");
+    for (let i = 1; i < typeButtons.length; i++) {
+      typeButtons[i].addEventListener("click", changeAllTypeButton);
+    }
+  }
+
+  /**
+   * When all types is checked, every type is selected
+   * when all type is unchecked, every type is unchecked
+   */
+  function changeTypeButtons() {
+    let typeButtons = qsa("#type-filter input");
+    for (let i = 1; i < typeButtons.length; i++) {
+      if (this.checked) {
+        typeButtons[i].checked = true;
+      } else {
+        typeButtons[i].checked = false;
+      }
+    }
+  }
+
+  /**
+   * When all buttons are checked, all type will be checked automatically
+   */
+  function changeAllTypeButton() {
+    let allChecked = true;
+    let typeButtons = qsa("#type-filter input");
+    for (let i = 1; i < typeButtons.length; i++) {
+      if (!typeButtons[i].checked) {
+        allChecked = false;
+        break;
+      }
+    }
+    qs("#type-filter input").checked = allChecked;
   }
 
   /**

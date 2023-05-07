@@ -13,8 +13,16 @@
   <body>
     <header>
       <nav>
-        <a href="index.html">Logo & Main Page</a>
-        <h1>Ecommerce Website</h1>
+        <a href="index.html">
+          <div>
+            <img src="img/logo.png" alt="logo">
+            <p>
+              We Sell It <br>
+              If You Can Drive It
+            </p>
+          </div>
+        </a>
+        <h1>Motor Nation</h1>
         <ul>
           <li><a href="index.html">FAQs</a></li>
           <li><a href="index.html">Cart</a></li>
@@ -27,67 +35,128 @@
       </div>
     </header>
     <main>
-      <!-- TODO: fill in main content -->
-      <h2>Find Vehicles by Type</h2>
-      <section id="shop-by-type" class="filter-card-view">
-        <a href="index.html">
-          <div class="card-view">
-            <p>Cars</p>
-          </div>
-        </a>
-        <a href="index.html">
-          <div class="card-view">
-            <p>Bikes</p>
-          </div>
-        </a>
-        <a href="index.html">
-          <div class="card-view">
-            <p>Planes</p>
-          </div>
-        </a>
-        <a href="index.html">
-          <div class="card-view">
-            <p>Boats</p>
-          </div>
-        </a>
-        <a href="index.html">
-          <div class="card-view">
-            <p>Others</p>
-          </div>
-        </a>
-      </section>
-      <h2>Find Vehicles by Price</h2>
-      <section id="shop-by-price" class="filter-card-view">
-        <a href="index.html">
-          <div class="card-view">
-            <p>Below $10,000</p>
-          </div>
-        </a>
-        <a href="index.html">
-          <div class="card-view">
-            <p>$10,000 - $50,000</p>
-          </div>
-        </a>
-        <a href="index.html">
-          <div class="card-view">
-            <p>$50,000 - $100,000</p>
-          </div>
-        </a>
-        <a href="index.html">
-          <div class="card-view">
-            <p>$100,000 - $500,000</p>
-          </div>
-        </a>
-        <a href="index.html">
-          <div class="card-view">
-            <p>$500,000 - $1,000,000</p>
-          </div>
-        </a>
-        <a href="index.html">
-          <div class="card-view">
-            <p>Over $1,000,000</p>
-          </div>
-        </a>
+      <section id="main-container">
+        <section id="filter-container">
+          <h2>Filters</h2>
+          <form>
+            <section id="type-filter">
+              <p>Select Vehicle Types</p>
+              <div>
+                <input
+                  type="checkbox"
+                  id="all-types"
+                  name="type"
+                  value="all"
+                  checked/>
+                <label for="all-types">All Types</label>
+              </div>
+              <div>
+                <input
+                  type="checkbox"
+                  id="cars"
+                  name="type"
+                  value="cars"
+                  checked/>
+                <label for="cars">Cars</label>
+              </div>
+              <div>
+                <input
+                  type="checkbox"
+                  id="motorcycles"
+                  name="type"
+                  value="motorcycles"
+                  checked/>
+                <label for="motorcycles">Motorcycles</label>
+              </div>
+              <div>
+                <input
+                  type="checkbox"
+                  id="planes"
+                  name="type"
+                  value="planes"
+                  checked/>
+                <label for="planes">Planes</label>
+              </div>
+              <div>
+                  <input
+                    type="checkbox"
+                    id="boats"
+                    name="type"
+                    value="boats"
+                    checked/>
+                  <label for="boats">Boats</label>
+              </div>
+              <div>
+                  <input
+                    type="checkbox"
+                    id="others"
+                    name="type"
+                    value="others"
+                    checked/>
+                  <label for="others">Others</label>
+              </div>
+            </section>
+            <section id="price-filter">
+              <p>Select Maximum Prices</p>
+              <label>
+                <input type="radio" name="price" value="none" checked>None
+              </label>
+              <label>
+                <input type="radio" name="price" value="10000">$10,000
+              </label>
+              <label>
+                <input type="radio" name="price" value="50000">$50,000
+              </label>
+              <label>
+                <input type="radio" name="price" value="100000">$100,000
+              </label>
+              <label>
+                <input type="radio" name="price" value="500000">$500,000
+              </label>
+              <label>
+                <input type="radio" name="price" value="1000000">$1,000,000
+              </label>
+            </section>
+            <button id="update">Update Filters</button>
+          </form>
+        </section>
+        <section id="vehicles-view">
+          <a href="">
+            <div class="vehicle-card">
+              <p>Car Name</p>
+              <img src="" alt="car">
+              <p>Price</p>
+            </div>
+          </a>
+          <a href="">
+            <div class="vehicle-card">
+              <p>Car Name</p>
+              <img src="" alt="car">
+              <p>Price</p>
+            </div>
+          </a>
+          <a href="">
+            <div class="vehicle-card">
+              <p>Car Name</p>
+              <img src="" alt="car">
+              <p>Price</p>
+            </div>
+          </a>
+          <a href="">
+            <div class="vehicle-card">
+              <p>Car Name</p>
+              <img src="" alt="car">
+              <p>Price</p>
+            </div>
+          </a>
+          <a href="">
+            <div class="vehicle-card">
+              <p>Car Name</p>
+              <img src="" alt="car">
+              <p>Price</p>
+            </div>
+          </a>
+        </section>
       </section>
     </main>
     <footer>
