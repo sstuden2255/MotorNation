@@ -204,7 +204,7 @@ header li > a {
   outline: none;
   width: 100%;
   color: white;
-  background-color: rgba(0,0,0,0);
+  background-color: rgba(0, 0, 0, 0);
   border-bottom: 2px solid rgba(255, 255, 255, 0.5);
   margin-bottom: 5px;
 }
@@ -221,8 +221,8 @@ header li > a {
   position: fixed;
   width: 30%;
   height: 50%;
-  background-color: rgba(0,0,0,0.75);
-  transform: translate(110%, 10%); /*TODO: change this?*/
+  background-color: rgba(0, 0, 0, 0.75);
+  transform: translate(110%, 10%); /* TODO: change this? */
 }
 
 form h2 {
