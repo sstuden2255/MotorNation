@@ -2,47 +2,57 @@
 The Motor Nation API provides information about all of the vehicles in the database that we sell as well as users' transaction history.
 
 
-## *Fill in Endpoint 1 Title*
-**Request Format:** *Fill in example request format*
+## *Get a list of vehicles matching filter parameters*
+**Request Format:** /vehicles?maxPrice=X&type=Y
 
-**Request Type:** *Fill in request type*
+**Request Type:** GET
 
-**Returned Data Format**: Plain Text
+**Returned Data Format**: Plain text
 
-**Description:** *Fill in description*
+**Description:** Return a list of all vehicles matching the given type and price filters.
 
 
-**Example Request:** *Fill in example request*
+**Example Request:** /vehicles?maxPrice=10000&type=car
+
+**Parameters:**
+- `maxPrice`: the maximum price of returned vehicles (i.e. 10000, 20000)
+- `type`: the type of vehicle returned (i.e. car, boat)
 
 **Example Response:**
-*Fill in example response in the ticks*
 
 ```
-
+SUV:suv
+Coupe:coupe
+Station Wagon:station-wagon
+Pickup Truck:pickup-truck
+...
 ```
 
 **Error Handling:**
-*Fill in an example of the error handling*
+N/A
 
-## *Fill in Endpoint 2 Title*
-**Request Format:** *Fill in example request format*
+## *Check if username and password exist*
+**Request Format:** /users
 
-**Request Type:** *Fill in request type*
+**Request Type:** POST
 
-**Returned Data Format**: JSON
+**Returned Data Format**: Plain text
 
-**Description:** *Fill in description*
+**Description:** When a user submits a username and password, checks if the username and password pair exists in the database and returns a success or failure response.
 
-**Example Request:** *Fill in example request*
+**Example Request:** /userswith POST parameters of `username=example@abc.com` and `password=ABC123`
+
+**Parameters:**
+- `username`: user's email
+- `password`: user's password
 
 **Example Response:**
-*Fill in example response in the {}*
 
-```json
-{
-
-}
+```
+Success
 ```
 
 **Error Handling:**
-*Fill in an example of the error handling*
+- Possible 400 (invalid request) errors (all plain text):
+  - if email does not exist in database, an error is returned with the message: `No account is linked to this emaill adresss.`
+  - if email exists, but password is incorrect, an error is returned with the message: `The username and password do not match, please try again.`
