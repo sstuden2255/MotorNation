@@ -13,6 +13,8 @@ body {
   background-color: #FFED66;
   text-align: center;
   position: relative;
+  margin: 0;
+  padding: 0;
 }
 
 /* header styles */
@@ -169,13 +171,19 @@ header li > a {
   display: flex;
   background-color: #d4d4d4;
   margin-bottom: 20px;
+  height: 640px;
   width: 70%;
   margin-top: 5%;
+  overflow-y: scroll;
   border: 5px solid black;
   border-radius: 2em;
   flex-wrap: wrap;
   justify-content: space-evenly;
   align-items: flex-start;
+}
+
+#vehicles-view::-webkit-scrollbar {
+  display: none;
 }
 
 .vehicle-card {
