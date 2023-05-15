@@ -199,3 +199,37 @@ Review Added Successfully!
   - If the user have not purchased the selected vehicle before reviewing, returns error message: `You cannot leave a review as you have not purchased this vehicle.`
 - Possible 500 errors (all plain text):
   - If something goes wrong on the server or the database, returns an error message: `Oops! Something went wrong. Please try again later. :(`
+
+## *Creating a new user*
+**Request Format:** /account/create
+
+**Request Type:** POST
+
+**Returned Data Format**: TEXT
+
+**Description:** When a user fills in all their information in the sign up
+form and hits the submit button, a POST request is made to the account endpoint and their information is added to the database.
+
+**Example Request:** /account/create with POST parameters of
+- `firstName=John`
+- `LastName=Doe`
+- `email=name123@example.com`
+- `password=123abc`
+
+**Parameters:**
+- `firstName`: First name of the user
+- `lastName`: Last name of the user
+- `email`: Users email
+- `password`: User's password
+
+**Example Response:**
+
+```
+Success
+```
+
+**Error Handling:**
+- Posible 400 errors (all plain text):
+  - If the user tries to create an account with an email that already exists in the database, returns error message: `An account with that email address already exists.`
+- Possible 500 errors (all plain text):
+  - If something goes wrong on the server or the database, returns an error message: `Oops! Something went wrong. Please try again later. :(`
