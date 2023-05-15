@@ -7,7 +7,7 @@ The Motor Nation API provides information about all of the vehicles in the datab
 
 **Request Type:** GET
 
-**Returned Data Format**: Plain text
+**Returned Data Format:** Plain text
 
 **Description:** Return a list of all vehicles matching the given type and price filters.
 
@@ -37,7 +37,7 @@ N/A
 
 **Request Type:** POST
 
-**Returned Data Format**: Plain text
+**Returned Data Format:** Plain text
 
 **Description:** When a user submits a username and password, checks if the username and password pair exists in the database and returns a success or failure response.
 
@@ -63,7 +63,7 @@ Success
 
 **Request Type:** GET
 
-**Returned Data Format**: JSON
+**Returned Data Format:** JSON
 
 **Description:** When a user clicks on a vehicle, returns information about the vehicle
 
@@ -104,7 +104,7 @@ Success
 
 **Request Type:** POST
 
-**Returned Data Format**: TEXT
+**Returned Data Format:** TEXT
 
 **Description:** When a user attempts to make a purchase, checks to see if transaction can be made. For a purchase to be successful, a user must be logged in, have enough money in their balance to purchase the vehicle, and the vehicle needs to be in stock
 
@@ -138,7 +138,7 @@ Success
 
 **Request Type:** POST
 
-**Returned Data Format**: JSON
+**Returned Data Format:** JSON
 
 **Description:** When a user checks their transaction history, returns information of all history associated with that account including the name of the vehicle and confirmation code
 
@@ -169,5 +169,33 @@ Success
 **Error Handling:**
 - Posible 400 errors (all plain text):
   - If the user is not logged in, returns error message: `Please log in!`
+- Possible 500 errors (all plain text):
+  - If something goes wrong on the server or the database, returns an error message: `Oops! Something went wrong. Please try again later. :(`
+
+## *Provide Feedback/Rating*
+**Request Format:** /:vehicle/rate
+
+**Request Type:** POST
+
+**Returned Data Format:** TEXT
+
+**Description:** After a user have purchased a vehicle, they can leave a rating and comment on the vehicle
+
+**Example Request:** /fordf-150/rate with POST parameters of `rating=5`, `comment=awesome`
+
+**Parameters:**
+- `rating`: rating for the vehicle (out of 5)
+- `comment`: the comment that the user leaves for the vehicle
+
+**Example Response:**
+
+```
+Review Added Successfully!
+```
+
+**Error Handling:**
+- Posible 400 errors (all plain text):
+  - If the user is not logged in, returns error message: `Please log in!`
+  - If the user have not purchased the selected vehicle before reviewing, returns error message: `You cannot leave a review as you have not purchased this vehicle.`
 - Possible 500 errors (all plain text):
   - If something goes wrong on the server or the database, returns an error message: `Oops! Something went wrong. Please try again later. :(`
