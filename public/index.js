@@ -17,7 +17,7 @@
   window.addEventListener("load", init);
 
   /**
-   * CHANGE: Describe what your init function does here.
+   * TODO: Describe what your init function does here.
    */
   function init() {
     let filterButton = qs("#filter-container form");
@@ -27,6 +27,16 @@
     });
 
     filterBehavior();
+    toggleLoginForm();
+  }
+
+  /**
+   * Adds the event listener necessary for toggling the login popup
+   */
+  function toggleLoginForm() {
+    id("profile-btn").addEventListener("click", () => {
+      id("log-in-form").classList.toggle("hidden");
+    });
   }
 
   /**

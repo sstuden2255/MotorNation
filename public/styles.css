@@ -214,28 +214,82 @@ header li > a {
   color: white;
   background-color: rgba(0, 0, 0, 0);
   border-bottom: 2px solid rgba(255, 255, 255, 0.5);
-  margin-bottom: 5px;
+  /* margin-bottom: 5px; */
 }
 
 #sign-up-form form, #log-in-form form {
-  height: 80%;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  align-items: center;
+}
+
+#sign-up-form {
+  height: 58%;
+  transform: translate(110%, 10%);
+}
+
+#sign-up-form form {
+  height: 64%;
+}
+
+#log-in-form {
+  height: 32%;
+  transform: translate(110%, 16%);
+}
+
+#log-in-form form {
+  height: 50%;
 }
 
 #sign-up-form, #log-in-form {
-  display: none;
   position: fixed;
   width: 30%;
-  height: 50%;
   background-color: rgba(0, 0, 0, 0.75);
-  transform: translate(110%, 10%); /* TODO: change this? */
 }
 
-form h2 {
+.form-header, #sign-up-form h2, #log-in-form h2 {
   color: white;
   text-shadow: 0 0 1em white;
+}
+
+#sign-up-form p, #log-in-form p {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: small;
+  color: white;
+  margin: 20px 20px 0 0;
+
+}
+
+.form-header {
+  padding-right: 10px;
+  font-size: 20px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.close:hover {
+  cursor: pointer;
+  color: black;
+}
+
+.hidden {
+  display: none;
+}
+
+#log-in-submit, #sign-up-submit {
+  border: none;
+  border-radius: 4px;
+  font-weight: 600;
+  width: 200px;
+  padding: 10px;
+  background-color: black;
+}
+
+#log-in-submit:hover, #sign-up-submit:hover  {
+  cursor: pointer;
+  color: rgba(255, 255, 255, 0.5);
+  box-shadow: 0px 0px 5px #fff;
 }
 
 main a:link, main a:visited, main a:hover, main a:active {
