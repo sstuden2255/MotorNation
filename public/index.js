@@ -28,6 +28,8 @@
 
     filterBehavior();
     toggleLoginForm();
+    navigateBetweenForms();
+    closeForms();
   }
 
   /**
@@ -35,8 +37,68 @@
    */
   function toggleLoginForm() {
     id("profile-btn").addEventListener("click", () => {
-      id("log-in-form").classList.toggle("hidden");
+      if (id("sign-up-form").classList.contains("hidden")) {
+        id("log-in-form").classList.toggle("hidden");
+      }
     });
+  }
+
+  /**
+   * Adds the event listener necessary for navigating between login
+   * and signup forms
+   */
+  function navigateBetweenForms() {
+    id("log-in-link").addEventListener("click", switchForms);
+    id("sign-up-link").addEventListener("click", switchForms);
+  }
+
+  /**
+   * Toggles which form is displayed to the user
+   */
+  function switchForms() {
+    toggleForm("log-in-form");
+    toggleForm("sign-up-form");
+  }
+
+  /**
+   * initializes event listeners for closing log in and
+   * sign up forms
+   */
+  function closeForms() {
+    qs("#log-in-form .close").addEventListener('click', () => {
+      toggleForm("log-in-form");
+    });
+
+    qs("#sign-up-form .close").addEventListener('click', () => {
+      toggleForm("sign-up-form");
+    });
+
+    id("main-container").addEventListener("click", () => {
+      hideForm("log-in-form");
+      hideForm("sign-up-form");
+    });
+
+    qs(".search-bar-container").addEventListener("click", () => {
+      hideForm("log-in-form");
+      hideForm("sign-up-form");
+    });
+  }
+
+
+  /**
+   * toggles a given form in our out of view
+   * @param {string} formId - id of the form to toggle
+   */
+  function toggleForm(formId) {
+    id(formId).classList.toggle("hidden");
+  }
+
+  /**
+   * hides a given form out of view
+   * @param {string} formId - id of the form to toggle
+   */
+  function hideForm(formId) {
+    id(formId).classList.add("hidden");
   }
 
   /**
