@@ -1,5 +1,5 @@
 # **Motor Nation** API Documentation
-The Motor Nation API provides information about all of the vehicles in the database that we sell as well as users' transaction history.
+The Motor Nation API provides information about all of the vehicles in the database that we sell as well as users' transaction history. Vehicles and vehicle names are based on vehicles from the GTA V video game.
 
 
 ## *Get a list of vehicles matching filter parameters*
@@ -15,22 +15,25 @@ The Motor Nation API provides information about all of the vehicles in the datab
 **Example Request:** /vehicles?maxPrice=10000&type=car
 
 **Parameters:**
-- `maxPrice`: the maximum price of returned vehicles (i.e. 10000, 20000)
+- `maxPrice`: the maximum price of returned vehicles (i.e. 10000, 20000, ..., 10000000)
 - `type`: the type of vehicle returned (i.e. car, boat)
 - `search`: input that user enters to search for, can be empty
 
 **Example Response:**
 
 ```
-SUV:suv
-Coupe:coupe
-Station Wagon:station-wagon
-Pickup Truck:pickup-truck
+asbo
+blista
+brioso
+brioso2
+weevil
 ...
 ```
 
 **Error Handling:**
-N/A
+- Possible 400 (invalid request) errors (all plain text):
+  - if no maximum price is selected, an error is returned with the message: `Please select a maxiumum price when searching for vehicles.`
+  - if non type is selected, an error is returned with the message: `Please select the type of vehicle you would like to view.`
 
 ## *Check if username and password exist*
 **Request Format:** /users
@@ -96,11 +99,13 @@ Success
 ```
 
 **Error Handling:**
+- Possible 400 (invalid request) errors (all plain text):
+  - if vehicle name doesn't not exist in the database, an error is returned with the message: `Vehicle with given name does not exist in database, please try a different name.`
 - Possible 500 errors (all plain text):
   - If something goes wrong on the server or the database, returns an error message: `Oops! Something went wrong. Unable to load. Please try again later. :(`
 
 ## *Purchasing a vehicle*
-**Request Format:** /vehicles/:vehicle_name/buy
+**Request Format:** /vehicles/buy/:vehicle_name
 
 **Request Type:** POST
 
@@ -108,7 +113,7 @@ Success
 
 **Description:** When a user attempts to make a purchase, checks to see if transaction can be made. For a purchase to be successful, a user must be logged in, have enough money in their balance to purchase the vehicle, and the vehicle needs to be in stock
 
-**Example Request:** /vehicles/fordf-150/buy with POST parameters of `loggedIn=true`,`balance=50000`, and `remaining=500`
+**Example Request:** /vehicles/buy/fordf-150 with POST parameters of `loggedIn=true`,`balance=50000`, and `remaining=500`
 
 **Parameters:**
 - `loggedIn`: whether user is logged in or not
