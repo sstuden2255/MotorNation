@@ -1,0 +1,40 @@
+/* vehicle page styles */
+/* ------------------------------------------------------------------------- */
+#info-container img {
+  height: 250px;
+  width: auto;
+}
+
+#info-container, #action-container {
+  /*display: flex;
+  flex-direction: column;*/
+}
+
+#main-container {
+  background-color: #d4d4d4;
+  text-align: left;
+  padding: 40px;
+  display: block;
+}
+
+#info-container, #action-container, #rating-container {
+  width: 100%;
+}
+
+#action-container button {
+  width: 300px;
+}
+
+#reviews {
+  height: 200px;
+  overflow-y: scroll;
+}
+
+#reviews::-webkit-scrollbar {
+  display: none;
+}
+
+.review {
+  background-color: white;
+  font-size: 12pt;
+}

@@ -15,6 +15,7 @@ body {
   position: relative;
   margin: 0;
   padding: 0;
+  overflow-x: hidden;
 }
 
 /* header styles */
@@ -133,15 +134,20 @@ header li > a {
 /* ------------------------------------------------------------------------- */
 #main-container {
   display: flex;
-  width: 95%;
   flex-wrap: wrap;
-  margin: auto;
   align-items: flex-start;
+  justify-content: space-evenly;
+  width: 95%;
+  padding: 40px;
 }
 
 #type-container, #price-container {
   background-color: white;
   margin: 30px;
+}
+
+#filter-container, #vehicles-view {
+  display: inline-block;
 }
 
 #filter-container {
@@ -159,7 +165,7 @@ header li > a {
   border-radius: 2em;
 }
 
-#filter-container button {
+#main-container button, #vehicle-container button {
   height: 50px;
   width: 100%;
   background-color: white;
@@ -167,7 +173,7 @@ header li > a {
   font-family: 'Dela Gothic One', cursive;
 }
 
-#filter-container button:hover {
+#main-container button:hover, #vehicle-container button:hover {
   background-color: black;
   color: white;
 }
@@ -184,7 +190,7 @@ header li > a {
   background-color: #d4d4d4;
   margin-bottom: 20px;
   height: 640px;
-  width: 70%;
+  width: 65%;
   margin-top: 5%;
   overflow-y: scroll;
   border: 5px solid black;
@@ -324,4 +330,43 @@ header li > a {
 main a:link, main a:visited, main a:hover, main a:active {
   text-decoration: none;
   color: black;
+}
+
+/* vehicle page styles */
+/* ------------------------------------------------------------------------- */
+#info-container img {
+  height: 250px;
+  width: auto;
+}
+
+#vehicle-container {
+  background-color: #ebebeb;
+  text-align: left;
+  padding: 40px;
+  display: block;
+  margin: 40px;
+}
+
+
+
+#vehicle-container button {
+  width: 200px;
+}
+
+#reviews {
+  height: 200px;
+  overflow-y: scroll;
+}
+
+#reviews::-webkit-scrollbar {
+  display: none;
+}
+
+.review {
+  background-color: white;
+  font-size: 12pt;
+}
+
+.hidden {
+  display: none !important;
 }

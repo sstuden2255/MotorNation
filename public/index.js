@@ -106,8 +106,11 @@
    */
   async function getVehicles() {
     try {
-      let resp = await fetch("abc");
+      const type = qs("input[name=type]:checked").value;
+      const price = qs("input[name=price]:checked").value;
+      let resp = await fetch("/vehicles?type=" + type +"&maxPrice=" + price);
       await statusCheck(resp);
+      displayVehicles(resp);
     } catch (err) {
       let txt = gen("p");
       let board = id("main-container");
@@ -115,16 +118,26 @@
     }
   }
 
+  function displayVehicles(resp) {
+
+  }
+
   /**
    * Set up how inputs for filters should behave
    */
   function filterBehavior() {
-    let allTypeButton = qs("#type-filter input");
-    allTypeButton.addEventListener("click", changeTypeButtons);
+    let reset = id("reset");
+    reset.addEventListener("click", resetFilter);
+  }
 
-    let typeButtons = qsa("#type-filter input");
-    for (let i = 1; i < typeButtons.length; i++) {
-      typeButtons[i].addEventListener("click", changeAllTypeButton);
+
+  async function resetFilter() {
+    qs("input[name=type]").checked = true;
+    qs("input[name=price]").checked = true;
+    try {
+      await getVehicles();
+    } catch (err) {
+
     }
   }
 
