@@ -1,0 +1,103 @@
+<!--
+  Names: Simon Studen, Vincent Kao
+  Date: May 1, 2023
+  Section: CSE 154
+
+  this is the HTML file for templating of one specific vehicle
+-->
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="vehicle.css">
+    <link href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Laila&display=swap"
+    rel="stylesheet">
+    <title>CSE 154 Final Project</title>
+    <script src="index.js"></script>
+    <meta charset="UTF-8">
+  </head>
+  <body>
+    <header>
+      <nav>
+        <a href="index.html">
+          <div>
+            <img src="img/logo.png" alt="logo">
+            <p>
+              We Sell It <br>
+              If You Can Drive It
+            </p>
+          </div>
+        </a>
+        <h1>Motor Nation</h1>
+        <ul>
+          <li><a href="index.html">FAQs</a></li>
+          <li><a href="index.html">Cart</a></li>
+          <li><a href="index.html">Profile</a></li>
+        </ul>
+      </nav>
+      <div class="search-bar-container">
+        <input type="text" placeholder="Start Searching for Vehicles..." name="search">
+        <button type="submit">Search</button>
+      </div>
+    </header>
+    <main>
+      <section id="sign-up-form" class="form-container">
+        <form>
+          <h2>Create an Account</h2>
+          <input type="text" placeholder="First Name">
+          <input type="text" placeholder="Last Name">
+          <input type="email" placeholder="Email">
+          <input type="password" placeholder="Password">
+          <input type="password" placeholder="Confirm Password">
+          <input type="submit" value="Sign Up">
+        </form>
+      </section>
+      <section id="log-in-form" class="form-container">
+        <form>
+          <h2>Log in</h2>
+          <input type="email" placeholder="Email">
+          <input type="password" placeholder="Password">
+          <input type="submit" value="Log in">
+        </form>
+      </section>
+      <section id="main-container">
+        <section id="action-container">
+          <button>Back to Searching!</button>
+          <button>Add to Cart</button>
+          <button>Buy Now!</button>
+        </section>
+        <section id="info-container">
+          <h1>generate this TITLE</h1>
+          <div>generate PRICE, INSTOCK, RATING</div>
+          <img src="img/logo.png" alt="vehicle picture">
+        </section>
+        <section id="rating-container">
+          <h2>Customer Reviews</h2>
+          <button>Add a Review!</button>
+          <section id="reviews">
+            <div class="review">
+              <p><em>username1:</em></p>
+              <p>    rating: x/5</p>
+              <p>    this is a sample review to a vehicle</p>
+            </div>
+            <div class="review">
+              <p><em>username2:</em></p>
+              <p>    rating: x/5</p>
+              <p>    this is a sample review to a vehicle</p>
+            </div>
+            <div class="review">
+              <p><em>username3:</em></p>
+              <p>    rating: x/5</p>
+              <p>    this is a sample review to a vehicle</p>
+            </div>
+          </section>
+        </section>
+      </section>
+
+    </main>
+    <footer>
+      <p>&copy; 2023 Simon Studen and Vincent Kao</p>
+    </footer>
+  </body>
+</html>

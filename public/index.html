@@ -37,7 +37,7 @@
         </ul>
       </nav>
       <div class="search-bar-container">
-        <input type="text" placeholder="Start Searching for Vehicles..." name="search">
+        <input type="text" placeholder="Search for Vehicles, Types, Maximum Price..." name="search">
         <button type="submit">Search</button>
       </div>
     </header>
@@ -61,66 +61,30 @@
           <input type="submit" value="Log in">
         </form>
       </section>
-      <section id="main-container">
+      <section id="main-container" class="">
         <section id="filter-container">
           <h2>Filters</h2>
           <form>
             <section id="type-filter">
               <p>Select Vehicle Types</p>
-              <div>
-                <input
-                  type="checkbox"
-                  id="all-types"
-                  name="type"
-                  value="all"
-                  checked>
-                <label for="all-types">All Types</label>
-              </div>
-              <div>
-                <input
-                  type="checkbox"
-                  id="cars"
-                  name="type"
-                  value="cars"
-                  checked>
-                <label for="cars">Cars</label>
-              </div>
-              <div>
-                <input
-                  type="checkbox"
-                  id="motorcycles"
-                  name="type"
-                  value="motorcycles"
-                  checked>
-                <label for="motorcycles">Motorcycles</label>
-              </div>
-              <div>
-                <input
-                  type="checkbox"
-                  id="planes"
-                  name="type"
-                  value="planes"
-                  checked>
-                <label for="planes">Planes</label>
-              </div>
-              <div>
-                <input
-                  type="checkbox"
-                  id="boats"
-                  name="type"
-                  value="boats"
-                  checked>
-                <label for="boats">Boats</label>
-              </div>
-              <div>
-                <input
-                  type="checkbox"
-                  id="others"
-                  name="type"
-                  value="others"
-                  checked>
-                <label for="others">Others</label>
-              </div>
+              <label>
+                <input type="radio" name="type" value="all" checked>All Types
+              </label>
+              <label>
+                <input type="radio" name="type" value="car">Cars
+              </label>
+              <label>
+                <input type="radio" name="type" value="motorcycle">Motorcycles
+              </label>
+              <label>
+                <input type="radio" name="type" value="plane">Planes
+              </label>
+              <label>
+                <input type="radio" name="type" value="boat">Boats
+              </label>
+              <label>
+                <input type="radio" name="type" value="other">Others
+              </label>
             </section>
             <section id="price-filter">
               <p>Select Maximum Prices</p>
@@ -143,6 +107,7 @@
                 <input type="radio" name="price" value="1000000">$1,000,000
               </label>
             </section>
+            <button id="reset">Reset Filters</button>
             <button id="update">Update Filters</button>
           </form>
         </section>
@@ -224,6 +189,52 @@
               <p>Price</p>
             </div>
           </a>
+        </section>
+      </section>
+      <section id="vehicle-container">
+        <section id="action-container">
+          <a href="index.html"><button>Back to Searching!</button></a>
+          <button>Add to Cart</button>
+          <button>Buy Now!</button>
+        </section>
+        <section id="info-container">
+          <h1>generate this TITLE</h1>
+          <div>generate PRICE, INSTOCK, RATING</div>
+          <img src="img/logo.png" alt="vehicle picture">
+        </section>
+        <section id="rating-container">
+          <h2>Customer Reviews</h2>
+          <button>Add a Review!</button>
+          <h3>Sort By:</h3>
+          <label>
+            <input type="radio" name="review" value="high" checked>Highest Rating
+          </label>
+          <label>
+            <input type="radio" name="review" value="low">Lowest Rating
+          </label>
+          <label>
+            <input type="radio" name="review" value="new">Newest
+          </label>
+          <label>
+            <input type="radio" name="review" value="old">Oldest
+          </label>
+          <section id="reviews">
+            <div class="review">
+              <p><em>username1:</em></p>
+              <p>    rating: x/5</p>
+              <p>    this is a sample review to a vehicle</p>
+            </div>
+            <div class="review">
+              <p><em>username2:</em></p>
+              <p>    rating: x/5</p>
+              <p>    this is a sample review to a vehicle</p>
+            </div>
+            <div class="review">
+              <p><em>username3:</em></p>
+              <p>    rating: x/5</p>
+              <p>    this is a sample review to a vehicle</p>
+            </div>
+          </section>
         </section>
       </section>
     </main>
