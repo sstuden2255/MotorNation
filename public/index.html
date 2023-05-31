@@ -46,7 +46,7 @@
         <div class="form-header">
           <span class="close">&times;</span>
         </div>
-        <h2>Create an Account</h2>
+          <h2>Create an Account</h2>
         <form>
           <input type="text" placeholder="First Name">
           <input type="text" placeholder="Last Name">
@@ -61,7 +61,7 @@
         <div class="form-header">
           <span class="close">&times;</span>
         </div>
-        <h2>Log in</h2>
+          <h2>Log in</h2>
         <form>
           <input type="email" placeholder="Email">
           <input type="password" placeholder="Password">
@@ -69,10 +69,10 @@
         </form>
         <p>Don't have an account?<button id="sign-up-link">Sign up!</button></p>
       </section>
-      <section id="main-container" class="">
+      <section id="main-container">
         <section id="filter-container">
           <h2>Filters</h2>
-          <form>
+          <form id="select-filters">
             <section id="type-filter">
               <p>Select Vehicle Types</p>
               <label>
@@ -89,6 +89,9 @@
               </label>
               <label>
                 <input type="radio" name="type" value="boat">Boats
+              </label>
+              <label>
+                <input type="radio" name="type" value="truck">Trucks
               </label>
               <label>
                 <input type="radio" name="type" value="other">Others
@@ -115,88 +118,11 @@
                 <input type="radio" name="price" value="1000000">$1,000,000
               </label>
             </section>
-            <button id="reset">Reset Filters</button>
             <button id="update">Update Filters</button>
           </form>
+          <button id="reset">Reset Filters</button>
         </section>
         <section id="vehicles-view">
-          <a href="">
-            <div class="vehicle-card">
-              <p>Car Name</p>
-              <img src="temp" alt="car">
-              <p>Price</p>
-            </div>
-          </a>
-          <a href="">
-            <div class="vehicle-card">
-              <p>Car Name</p>
-              <img src="temp" alt="car">
-              <p>Price</p>
-            </div>
-          </a>
-          <a href="">
-            <div class="vehicle-card">
-              <p>Car Name</p>
-              <img src="temp" alt="car">
-              <p>Price</p>
-            </div>
-          </a>
-          <a href="">
-            <div class="vehicle-card">
-              <p>Car Name</p>
-              <img src="temp" alt="car">
-              <p>Price</p>
-            </div>
-          </a>
-          <a href="">
-            <div class="vehicle-card">
-              <p>Car Name</p>
-              <img src="temp" alt="car">
-              <p>Price</p>
-            </div>
-          </a>
-          <a href="">
-            <div class="vehicle-card">
-              <p>Car Name</p>
-              <img src="temp" alt="car">
-              <p>Price</p>
-            </div>
-          </a>
-          <a href="">
-            <div class="vehicle-card">
-              <p>Car Name</p>
-              <img src="temp" alt="car">
-              <p>Price</p>
-            </div>
-          </a>
-          <a href="">
-            <div class="vehicle-card">
-              <p>Car Name</p>
-              <img src="temp" alt="car">
-              <p>Price</p>
-            </div>
-          </a>
-          <a href="">
-            <div class="vehicle-card">
-              <p>Car Name</p>
-              <img src="temp" alt="car">
-              <p>Price</p>
-            </div>
-          </a>
-          <a href="">
-            <div class="vehicle-card">
-              <p>Car Name</p>
-              <img src="temp" alt="car">
-              <p>Price</p>
-            </div>
-          </a>
-          <a href="">
-            <div class="vehicle-card">
-              <p>Car Name</p>
-              <img src="temp" alt="car">
-              <p>Price</p>
-            </div>
-          </a>
         </section>
       </section>
       <section id="vehicle-container">

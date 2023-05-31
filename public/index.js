@@ -19,17 +19,23 @@
   /**
    * TODO: Describe what your init function does here.
    */
-  function init() {
+  async function init() {
     let filterButton = qs("#filter-container form");
-    filterButton.addEventListener("submit", function(evt) {
+    filterButton.addEventListener("submit", async function(evt) {
       evt.preventDefault();
-      getVehicles();
+      await getVehicles();
     });
 
     filterBehavior();
     toggleLoginForm();
     navigateBetweenForms();
     closeForms();
+
+    try {
+      await getVehicles();
+    } catch (err) {
+
+    }
   }
 
   /**
@@ -110,7 +116,8 @@
       const price = qs("input[name=price]:checked").value;
       let resp = await fetch("/vehicles?type=" + type +"&maxPrice=" + price);
       await statusCheck(resp);
-      displayVehicles(resp);
+      resp = await resp.text();
+      await displayVehicles(resp);
     } catch (err) {
       let txt = gen("p");
       let board = id("main-container");
@@ -118,7 +125,52 @@
     }
   }
 
-  function displayVehicles(resp) {
+  /**
+   * displays vehicles on main page
+   * @param {string} resp - name of all vehicles to be displayed
+   */
+  async function displayVehicles(resp) {
+    try {
+      id("vehicles-view").innerHTML = "";
+      const vehicles = resp.split("\n");
+      for (let i = 0; i < vehicles.length; i++) {
+        let resp = await fetch("/vehicles/" + vehicles[i]);
+        resp = await resp.json();
+        makeVehicleCard(resp);
+      }
+    } catch (err) {
+
+    }
+  }
+
+  /**
+   * creates and adds vehicle card on main page
+   * @param {Object} resp - info of vehicle to make a card
+   */
+  function makeVehicleCard(resp) {
+    let card = gen("section");
+    card.classList.add("vehicle-card");
+    let name = gen("h2");
+    name.textContent = resp["name"];
+    let pic = gen("img");
+    pic.src = resp["picture"];
+    pic.alt = resp["name"];
+    let price = gen("p");
+    price.textContent = "$" + resp["price"];
+    card.appendChild(name);
+    card.appendChild(pic);
+    card.appendChild(price);
+    card.addEventListener("click", function() {
+      vehiclePage(resp);
+    })
+    id("vehicles-view").appendChild(card);
+  }
+
+  /**
+   * shows a page for a selected vehicle with more details
+   * @param {Object} resp - info of vehicle to show more details
+   */
+  async function vehiclePage(resp) {
 
   }
 

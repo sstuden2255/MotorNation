@@ -33,7 +33,7 @@ app.get("/vehicles", async function(req, res) {
       let db = await getDBConnection();
       let results;
       if (maxPrice === "none") {
-        maxPrice = Infinity;
+        maxPrice = "binary-double-infinity"; // infinity for SQL
       } else {
         maxPrice = parseFloat(maxPrice);
       }
@@ -44,12 +44,29 @@ app.get("/vehicles", async function(req, res) {
         query += " AND type LIKE ?;";
         results = await db.all(query, maxPrice, type);
       }
+      let cars = "";
+      for (let i = 0; i < results.length; i++) {
+        cars += results[i]["name"] + "\n";
+      }
       await db.close();
-      console.log(results);
-      res.type("text").send(results);
+      res.type("text").send(cars);
     } else {
       res.type("text").status(400).send("Missing a Filter Parameter");
     }
+  } catch (err) {
+    await db.close();
+    res.type("text").status(500).send("Something on the server went wrong!");
+  }
+});
+
+// gets a list of vehicles matching filter parameters
+app.get("/vehicles/:vehicle_name", async function(req, res) {
+  const name = req.params["vehicle_name"];
+  try {
+    let query = "SELECT * FROM vehicles WHERE name = ?"
+    let db = await getDBConnection();
+    let results = await db.get(query, name);
+    res.type("json").send(results);
   } catch (err) {
     res.type("text").status(500).send("Something on the server went wrong!");
   }

@@ -5,7 +5,6 @@ CREATE TABLE "vehicles" (
 	"in-stock"	INTEGER NOT NULL,
 	"rating"	NUMERIC,
 	"picture"	TEXT NOT NULL,
-	"description"	TEXT,
 	PRIMARY KEY("name")
 );
 
