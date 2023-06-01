@@ -32,10 +32,35 @@
         <h1>Motor Nation</h1>
         <ul>
           <li><a href="index.html">FAQs</a></li>
-          <li><a href="index.html">Cart</a></li>
+          <li><a href="#" id="cart-btn">Cart</a></li>
           <li><a href="#" id="profile-btn">Profile</a></li>
         </ul>
       </nav>
+<!--  -->
+      <div id="cart" class="form-container hidden">
+        <div class="overlay"></div>
+        <div class="form-header">
+          <span class="close">&times;</span>
+        </div>
+        <h2>Cart</h2>
+        <ul id="buyItems">
+            <h3 class="empty">Your shopping cart is empty!</h3>
+            <!-- <li class="buyItem">
+      <img src="Images/producs-images/Mobiles/galaxynote10.png">
+      <div>
+      <h5>Products Name</h5>
+      <h6>$199</h6>
+      <div>
+        <button>-</button>
+        <span class="countOfProduct">1</span>
+        <button>+</button>
+      </div>
+      </div>
+      </li> -->
+        </ul>
+        <button id="check-out-btn" class="hidden">Check out</button>
+      </div>
+<!--  -->
       <div class="search-bar-container">
         <input type="text" placeholder="Search for Vehicles, Types, Maximum Price..." name="search">
         <button type="submit">Search</button>
@@ -46,7 +71,7 @@
         <div class="form-header">
           <span class="close">&times;</span>
         </div>
-          <h2>Create an Account</h2>
+        <h2>Create an Account</h2>
         <form>
           <input type="text" placeholder="First Name">
           <input type="text" placeholder="Last Name">
@@ -61,7 +86,7 @@
         <div class="form-header">
           <span class="close">&times;</span>
         </div>
-          <h2>Log in</h2>
+        <h2>Log in</h2>
         <form>
           <input type="email" placeholder="Email">
           <input type="password" placeholder="Password">
@@ -128,13 +153,17 @@
       <section id="vehicle-container">
         <section id="action-container">
           <a href="index.html"><button>Back to Searching!</button></a>
-          <button>Add to Cart</button>
+          <button id="add-to-cart-btn">Add to Cart</button>
           <button>Buy Now!</button>
         </section>
         <section id="info-container">
-          <h1>generate this TITLE</h1>
-          <div>generate PRICE, INSTOCK, RATING</div>
-          <img src="img/logo.png" alt="vehicle picture">
+          <h1 id="selected-name">generate this TITLE</h1>
+          <div>
+            <p><span id="selected-rating">x</span>/5 stars</p>
+            <p>Price: <span id="selected-price">[price]</span></p>
+            <p><span id="selected-stock">x</span> left in stock</p>
+          </div>
+          <img id="selected-img" src="img/logo.png" alt="vehicle picture">
         </section>
         <section id="rating-container">
           <h2>Customer Reviews</h2>
