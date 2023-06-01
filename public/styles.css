@@ -336,11 +336,75 @@ main a:link, main a:visited, main a:hover, main a:active {
   box-shadow: 0px 0px 5px #fff;
 }
 
+/* cart styles */
+/* ------------------------------------------------------------------------- */
+
 #cart {
   position: absolute;
   top: 100px;
   right: 10px;
   background-color: rgba(0, 0, 0, 0.75);
+}
+
+#cart .cart-card {
+  display: flex;
+  width: 400px;
+  height: 100px;
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+  border-bottom: white 1px solid;
+
+}
+
+#cart .cart-img {
+  height: 100px;
+  margin-right: 20px;
+}
+
+#cart .cart-card-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+
+}
+
+#cart .cart-card-title {
+  font-size: 20px;
+  text-shadow: none;
+  margin-block-end : 0;
+  margin-block-start: 8px;
+}
+
+#cart .cart-card-price {
+  font-size: 12px;
+  text-shadow: none;
+  margin-bottom: 10px;
+}
+
+#cart .cart-card-count-container {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+#cart .count-btn  {
+  border: none;
+  background-color: white;
+  height: 20px;
+  width: 20px;
+  border-radius: 50%;
+}
+
+#cart .count-btn:hover {
+  color: rgba(255, 255, 255, 0.5);
+  background-color: black;
+  box-shadow: 0px 0px 5px #fff;
+
+}
+
+#cart .count-btn, #cart .cart-card-count {
+  margin-right: 5px;
 }
 
 /* vehicle page styles */

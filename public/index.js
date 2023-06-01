@@ -87,7 +87,7 @@
    * adds the selected item to the cart
    */
   function addItemToCart() {
-    // TODO: hide empty shopping cart message
+    removeEmptyCartMessage();
     let vehicleName = id("selected-name").textContent;
     let price = id("selected-price").textContent;
     let stock = id("selected-stock").textContent;
@@ -126,7 +126,7 @@
 
     let count = gen("span");
     count.textContent = "1";
-    count.classList.add("cart-cart-count");
+    count.classList.add("cart-card-count");
     countContainer.appendChild(count);
 
     let incrementButton = gen("button");
@@ -138,6 +138,16 @@
     card.appendChild(infoContainer);
 
     id("cart").appendChild(card);
+  }
+
+  /**
+   * helper function that removes the empty cart messsage when
+   * an item is added
+   */
+  function removeEmptyCartMessage() {
+    if(!id("empty-cart-message").classList.contains('hidden')) {
+      id("empty-cart-message").classList.add("hidden");
+    }
   }
 
   /**
