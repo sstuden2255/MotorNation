@@ -11,6 +11,7 @@
 (function() {
 
   // MODULE GLOBAL VARIABLES, CONSTANTS, AND HELPER FUNCTIONS CAN BE PLACED HERE
+  let cartObj = {};
   /**
    * Add a function that will be called when the window is loaded.
    */
@@ -33,14 +34,15 @@
       await submitReview();
     });
 
-
     filterBehavior();
     toggleLoginForm();
     toggleCart();
+    toggleCheckoutScreen();
     navigateBetweenForms();
     closeForms();
     addToCartButtonBehavior();
-    toggleHomeScreen();
+    backFromVehicleView();
+    backFromCheckout();
 
     try {
       await getVehicles();
@@ -54,7 +56,7 @@
    */
   function toggleLoginForm() {
     id("profile-btn").addEventListener("click", profileButtonBehavior);
-      }
+  }
 
   /**
    * helper function that limits certain behavior when clicking profile button
@@ -86,166 +88,30 @@
   }
 
   /**
-   * intiliazes button for adding selected item to cart
+   * initializes toggling the checkout screen whent he checkout
+   * button in the cart is clicked
    */
-  function addToCartButtonBehavior() {
-    id("add-to-cart-btn").addEventListener("click", addItemToCart);
+  function toggleCheckoutScreen() {
+    id("check-out-btn").addEventListener("click", () => {
+      hideCurrentView();
+      appendCartItemsToCheckout();
+    })
   }
 
   /**
-   * adds the selected item to the cart
+   * helper function that hides the current view when the checkout button
+   * is clicked
    */
-  function addItemToCart() {
-    removeEmptyCartMessage();
-    unhideCheckoutButton();
-    incrementCartItemCount();
-
-    // TODO: factor into helper methods
-    let vehicleName = id("selected-name").textContent;
-    let vehicleID = vehicleName.split(" ").join("-").toLowerCase();
-    let price = id("selected-price").textContent;
-    incrementCartTotal(parseInt(price));
-
-    if(qs(`#cart-card-container #${vehicleID}`)) {
-      incrementVehicleCartCount(vehicleID);
-    } else {
-      // TODO: make sure number of vehicles in cart is <= current stock
-      let stock = id("selected-stock").textContent;
-      let vehicleImg = id("selected-img").src;
-      let vehicleImgAlt = id("selected-img").alt;
-
-      let card = gen("div");
-      card.classList.add("cart-card");
-      card.id = vehicleName.split(" ").join("-").toLowerCase();
-      console.log(card.id);
-
-      let img = gen("img");
-      img.src = vehicleImg;
-      img.alt = vehicleImgAlt;
-      img.classList.add("cart-img");
-      card.appendChild(img);
-
-      let infoContainer = gen('div');
-      infoContainer.classList.add('cart-card-info');
-
-      let title = gen("h1");
-      title.textContent = vehicleName;
-      title.classList.add("cart-card-title");
-      infoContainer.appendChild(title);
-
-      let cardPrice = gen("h2");
-      cardPrice.textContent = "$" + price;
-      cardPrice.classList.add("cart-card-price");
-      infoContainer.appendChild(cardPrice);
-
-      let countContainer = gen("div");
-      countContainer.classList.add("cart-card-count-container");
-
-      //TODO: add avent listener for decrement function
-      let decrementButton = gen("button");
-      decrementButton.textContent = "-";
-      decrementButton.classList.add("count-btn");
-      countContainer.appendChild(decrementButton);
-
-      let count = gen("span");
-      count.textContent = "1";
-      count.classList.add("cart-card-count");
-      countContainer.appendChild(count);
-
-      let incrementButton = gen("button");
-      incrementButton.textContent = "+";
-      incrementButton.classList.add("count-btn");
-      countContainer.appendChild(incrementButton);
-      infoContainer.appendChild(countContainer);
-
-      card.appendChild(infoContainer);
-
-      id("cart-card-container").appendChild(card);
-    }
-  }
-
-  /**
-   * helper function that removes the empty cart messsage when
-   * an item is added
-   */
-  function removeEmptyCartMessage() {
-    // TODO: change when number of cart items is implemented
-    if(!id("empty-cart-message").classList.contains("hidden")) {
-      id("empty-cart-message").classList.add("hidden");
-    }
-  }
-
-  /**
-   * helper function that unhides the checkout button when the cart is
-   * non-empty
-   */
-  function unhideCheckoutButton() {
-    // TODO: combine with above method
-    if(id("check-out-btn").classList.contains("hidden")) {
-      id("check-out-btn").classList.remove("hidden");
-    }
-    if(id("cart-info").classList.contains("hidden")) {
-      id("cart-info").classList.remove("hidden");
-    }
-    if(id("cart-card-container").classList.contains("hidden")) {
-      id("cart-card-container").classList.remove("hidden");
-    }
-  }
-
-  /**
-   * helper function that increments the count of items in the cart when
-   * and item is added
-   */
-  function incrementCartItemCount() {
-    id("cart-items").textContent = parseInt(id("cart-items").textContent) + 1;
-  }
-
-  /**
-   * helper function that increments the total cost of items in the cart when
-   * and item is added
-   */
-  function incrementCartTotal(currentCost) {
-    id("cart-total").textContent = parseInt(id("cart-total").textContent) + currentCost;
-  }
-
-  /**
-   * helper function that deccrements the count of items in the cart when
-   * and item is added
-   */
-  function decrementCartItemCount() {
-    id("cart-items").textContent = parseInt(id("cart-items").textContent) - 1;
-  }
-
-  /**
-   * helper function that decrements the total cost of items in the cart when
-   * and item is added
-   */
-  function decrementCartTotal(currentCost) {
-    id("cart-total").textContent = parseInt(id("cart-total").textContent) + 1;
-  }
-
-  /**
-   * helper function that increments the count for a particular vehicle card
-   * in the cart
-   * @param {string} vehicleID - id of the vehicle card we want to increment
-   * the count for
-   */
-  function incrementVehicleCartCount(vehicleID) {
-    let currentCount = qs(`#${vehicleID} .cart-card-count`);
-    currentCount.textContent = parseInt(currentCount.textContent) + 1;
-  }
-
-
-   /**
-   * helper function that decrements the count for a particular vehicle card
-   * in the cart
-   * @param {string} vehicleID - id of the vehicle card we want to increment
-   * the count for
-   */
-  function decrementVehicleCartCount(vehicleID) {
-    let currentCount = qs(`#${vehicleID} .cart-card-count`);
-    currentCount.textContent = parseInt(currentCount.textContent) - 1;
-  }
+ function hideCurrentView() {
+   let currentView = "";
+   if (!id("main-container").classList.contains("hidden")) {
+     currentView = "main-container";
+   } else {
+     currentView = "vehicle-container";
+   }
+   id(currentView).classList.add("hidden");
+   id("check-out-container").classList.remove("hidden");
+ }
 
   /**
    * Adds the event listener necessary for navigating between login
@@ -294,16 +160,29 @@
 
   /**
    * toggles the home screen back into view when the "Back to Searching!"
-   * button is clicked and clears the vehicle info card
+   * button is clicked on the selected vehicle view and clears the
+   * vehicle info card
    */
-  function toggleHomeScreen() {
-    id("back-to-home-btn").addEventListener("click", () => {
+  function backFromVehicleView() {
+    id("vehicle-view-back-btn").addEventListener("click", () => {
       id("vehicle-container").classList.add("hidden");
       id("main-container").classList.remove("hidden");
       id("info-container").innerHTML = "";
     });
   }
 
+  /**
+   * toggles the home screen back into view when the "Back to Searching!"
+   * button is clicked on the checkout screen and clears the
+   * checkout screen content
+   */
+  function backFromCheckout() {
+    id("check-out-back-btn").addEventListener("click", () => {
+      id("check-out-container").classList.add("hidden");
+      id("main-container").classList.remove("hidden");
+      id("info-container").innerHTML = "";
+    });
+  }
 
   /**
    * helper function that toggles a given form in our out of view
@@ -321,6 +200,257 @@
     id(formId).classList.add("hidden");
   }
 
+  /**
+   * intiliazes button for adding selected item to cart
+   */
+  function addToCartButtonBehavior() {
+    id("add-to-cart-btn").addEventListener("click", addItemToCart);
+  }
+
+  /**
+   * adds the selected item to the cart
+   */
+  function addItemToCart() {
+    let vehicleObj= createLocalStorageObject();
+    let vehicleImg = vehicleObj["img-src"];
+    let vehicleImgAlt = vehicleObj["img-alt"];
+    let vehicleName = vehicleObj["name"];
+    let vehicleID = vehicleObj["id"];
+    let price = vehicleObj["price"];
+    incrementCartTotal(vehicleID, parseInt(price));
+    incrementCartItemCount(vehicleID);
+
+    if(qs(`#cart-card-container #${vehicleID}`)) {
+      incrementVehicleCartCount(vehicleID);
+    } else {
+      cartObj[vehicleID] = vehicleObj;
+      // TODO: update localstorage
+      let card = gen("div");
+      card.classList.add("cart-card");
+      card.id = vehicleID;
+
+      let img = genVehicleImage(vehicleImg, vehicleImgAlt);
+      card.appendChild(img);
+
+      let infoContainer = genVehicleInfoContainer(vehicleName, price, vehicleID);
+      card.appendChild(infoContainer);
+
+      id("cart-card-container").appendChild(card);
+    }
+  }
+
+  /**r
+   * creates an object for storing data about a particular vehicle that is
+   * added to the cart to local storage
+   * @returns {Object} - object containing data about a particular vehicle
+   */
+  function createLocalStorageObject() {
+    let vehicleImg = id("selected-img").src;
+    let vehicleImgAlt = id("selected-img").alt;
+    let vehicleName = id("selected-name").textContent;
+    let vehicleID = vehicleName.split(" ").join("-").toLowerCase();
+    let price = id("selected-price").textContent;
+    let vehicleObj = {};
+    vehicleObj["name"] = vehicleName;
+    vehicleObj["id"] = vehicleID;
+    vehicleObj["img-src"] = vehicleImg;
+    vehicleObj["img-alt"] = vehicleImgAlt;
+    vehicleObj["price"] = price;
+    vehicleObj["count"] = 1; // TODO: make sure no off by one here
+    return vehicleObj;
+  }
+
+  /**
+   * helper method that adds/removes information elements when the cart
+   * is empty vs non-empty
+   */
+  function cartEmptyToggles() {
+    id("empty-cart-message").classList.toggle("hidden");
+    id("check-out-btn").classList.toggle("hidden");
+    id("cart-info").classList.toggle("hidden");
+    id("cart-card-container").classList.toggle("hidden");
+  }
+
+  /**
+   * helper function that generates the vehicle image
+   * for a card in the cart
+   * @param {string} source - source of image
+   * @param {*} alt - alt text for image
+   * @returns {HTMLElement} - img element of vehicle
+   */
+  function genVehicleImage(source, alt) {
+    let img = gen("img");
+    img.src = source;
+    img.alt = alt;
+    img.classList.add("cart-img");
+    return img;
+  }
+
+  /**
+   * helper function that generates the elements for the
+   * info portion of the vehicle card in the cart
+   * @param {string} vehicleName - name of vehicle
+   * @param {string} price - price of vehicle
+   * @param {string} vehicleID - id of vehicle
+   * @returns {HTMLElement} - div containing info elements
+   */
+  function genVehicleInfoContainer(vehicleName, price, vehicleID) {
+    let infoContainer = gen('div');
+    infoContainer.classList.add('cart-card-info');
+
+    let title = gen("h1");
+    title.textContent = vehicleName;
+    title.classList.add("cart-card-title");
+    infoContainer.appendChild(title);
+
+    let cardPrice = gen("h2");
+    cardPrice.textContent = "$" + price;
+    cardPrice.classList.add("cart-card-price");
+    infoContainer.appendChild(cardPrice);
+
+    let countContainer = genCountContainer(price, vehicleID);
+    infoContainer.appendChild(countContainer);
+    return infoContainer;
+  }
+
+  /**
+   * helper function that generates elements for the increment
+   * and decrement functionality for a vehicle card in the cart
+   * @param {string} price - vehicle price
+   * @param {string} vehicleID - vehicle id
+   * @returns {HTMLElement} - div containing count and inc/dec buttons
+   */
+  function genCountContainer(price, vehicleID) {
+    let countContainer = gen("div");
+    countContainer.classList.add("cart-card-count-container");
+
+    let decrementButton = gen("button");
+    decrementButton.textContent = "-";
+    decrementButton.classList.add("count-btn");
+    decrementButton.addEventListener("click", () => {
+      decrementCartItemCount();
+      decrementCartTotal(parseInt(price));
+      decrementVehicleCartCount(vehicleID);
+    });
+    countContainer.appendChild(decrementButton);
+
+    let count = gen("span");
+    count.textContent = "1";
+    count.classList.add("cart-card-count");
+    countContainer.appendChild(count);
+
+    let incrementButton = gen("button");
+    incrementButton.textContent = "+";
+    incrementButton.classList.add("count-btn");
+    incrementButton.addEventListener("click", () => {
+      incrementCartItemCount(vehicleID);
+      incrementCartTotal(vehicleID, parseInt(price));
+      incrementVehicleCartCount(vehicleID);
+    });
+    countContainer.appendChild(incrementButton);
+    return countContainer;
+  }
+
+  /**
+   * helper function that increments the count of items in the cart when
+   * and item is added
+   * @param {string} vehicleID - vehicle id
+   */
+  function incrementCartItemCount(vehicleID) {
+    let currentCount = parseInt(id("cart-items").textContent);
+    if (currentCount === 0) {
+      cartEmptyToggles();
+    }
+    if (enoughInStock(vehicleID)) {
+      id("cart-items").textContent = currentCount + 1;
+    }
+  }
+
+  /**
+   * helper function that increments the total cost of items in the cart when
+   * and item is added
+   * @param {string} vehicleID - vehicle id
+   * @param {string} currentCost - vehicle price
+   */
+  function incrementCartTotal(vehicleID, currentCost) {
+    if (enoughInStock(vehicleID)) {
+      id("cart-total").textContent = parseInt(id("cart-total").textContent) + currentCost;
+    }
+  }
+
+  /**
+   * helper function that increments the count for a particular vehicle card
+   * in the cart if there is enough in stock
+   * @param {string} vehicleID - vehicle id
+   */
+  function incrementVehicleCartCount(vehicleID) {
+    let currentCount = qs(`#${vehicleID} .cart-card-count`);
+    if (enoughInStock(vehicleID)) {
+      currentCount.textContent = parseInt(currentCount.textContent) + 1;
+      cartObj[vehicleID][count] += 1;
+      // TODO: update localstorage
+    }
+  }
+
+  /**
+   * helper function that decrements the count of items in the cart when
+   * and item is added
+   */
+  function decrementCartItemCount() {
+    let numItems = parseInt(id("cart-items").textContent);
+    if (numItems > 1) {
+      id("cart-items").textContent = parseInt(id("cart-items").textContent) - 1;
+    } else {
+      id("cart-items").textContent = 0;
+      cartEmptyToggles();
+    }
+  }
+
+  /**
+   * helper function that decrements the total cost of items in the cart when
+   * and item is added
+   * @param {number} currentCost - cost of selected vehicle
+   */
+  function decrementCartTotal(currentCost) {
+    let currentTotal = parseInt(id("cart-total").textContent);
+    if (currentTotal - currentCost > 0) {
+      id("cart-total").textContent = parseInt(id("cart-total").textContent) - currentCost;
+    } else {
+      id("cart-total").textContent = 0;
+    }
+  }
+
+   /**
+   * helper function that decrements the count for a particular vehicle card
+   * in the cart
+   * @param {string} vehicleID - id of the vehicle card we want to increment
+   * the count for
+   */
+  function decrementVehicleCartCount(vehicleID) {
+    let currentCount = qs(`#${vehicleID} .cart-card-count`);
+    if (parseInt(currentCount.textContent) > 1) {
+      currentCount.textContent = parseInt(currentCount.textContent) - 1;
+      cartObj[vehicleID][count] -= 1;
+      // TODO: update localstorage
+    } else {
+      id("cart-card-container").removeChild(id(vehicleID))
+      delete cartObj[vehicleID];
+      // TODO: update localstorage
+    }
+  }
+
+  /**
+   * helper function that checks if there is enough vehicles in stock
+   * to add to the cart
+   * @returns {boolean} - true if there are enough vehicles in stock to add to cart,
+   * fals otherwise
+   */
+  function enoughInStock(vehicleID) {
+    let currentCount = qs(`#${vehicleID} .cart-card-count`);
+    let selectedStock = id("selected-stock");
+    return !currentCount ||
+    (parseInt(currentCount.textContent) < parseInt(selectedStock.textContent));
+  }
 
   function changeCardView() {
     let cards = qsa(".vehicle-card");
