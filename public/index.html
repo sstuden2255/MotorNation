@@ -71,6 +71,13 @@
       </section>
       <section id="main-container">
         <section id="filter-container">
+          <p>Select Layout</p>
+              <label>
+                <input type="radio" name="layout" value="normal" checked>Normal
+              </label>
+              <label>
+                <input type="radio" name="layout" value="compact">Compact
+              </label>
           <h2>Filters</h2>
           <form id="select-filters">
             <section id="type-filter">
@@ -125,49 +132,31 @@
         <section id="vehicles-view">
         </section>
       </section>
-      <section id="vehicle-container">
+      <section id="vehicle-container" class="hidden">
         <section id="action-container">
-          <a href="index.html"><button>Back to Searching!</button></a>
+          <button>Back to Searching!</button>
           <button>Add to Cart</button>
           <button>Buy Now!</button>
         </section>
         <section id="info-container">
-          <h1>generate this TITLE</h1>
-          <div>generate PRICE, INSTOCK, RATING</div>
-          <img src="img/logo.png" alt="vehicle picture">
         </section>
         <section id="rating-container">
           <h2>Customer Reviews</h2>
           <button>Add a Review!</button>
-          <h3>Sort By:</h3>
-          <label>
-            <input type="radio" name="review" value="high" checked>Highest Rating
-          </label>
-          <label>
-            <input type="radio" name="review" value="low">Lowest Rating
-          </label>
-          <label>
-            <input type="radio" name="review" value="new">Newest
-          </label>
-          <label>
-            <input type="radio" name="review" value="old">Oldest
-          </label>
+          <form id="add-review" class="hidden">
+            <span>x</span>
+            <label for="rate">Your Rating (out of 5):</label>
+            <select name="rate" id="rate">
+              <option value="5">5</option>
+              <option value="4">4</option>
+              <option value="3">3</option>
+              <option value="2">2</option>
+              <option value="1">1</option>
+            </select>
+            <input type="text" placeholder="Explain Your Rating Here..." required maxlength="280">
+            <button>Submit Review</button>
+          </form>
           <section id="reviews">
-            <div class="review">
-              <p><em>username1:</em></p>
-              <p>    rating: x/5</p>
-              <p>    this is a sample review to a vehicle</p>
-            </div>
-            <div class="review">
-              <p><em>username2:</em></p>
-              <p>    rating: x/5</p>
-              <p>    this is a sample review to a vehicle</p>
-            </div>
-            <div class="review">
-              <p><em>username3:</em></p>
-              <p>    rating: x/5</p>
-              <p>    this is a sample review to a vehicle</p>
-            </div>
           </section>
         </section>
       </section>

@@ -16,6 +16,8 @@ const multer = require("multer");
 const sqlite3 = require("sqlite3");
 const sqlite = require("sqlite");
 
+const cookieParser = require("cookie-parser");
+
 // for application/x-www-form-urlencoded
 app.use(express.urlencoded({extended: true})); // built-in middleware
 // for application/json
@@ -23,13 +25,16 @@ app.use(express.json()); // built-in middleware
 // for multipart/form-data (required with FormData)
 app.use(multer().none()); // requires the "multer" module
 
+//
+app.use(cookieParser());
+
 // gets a list of vehicles matching filter parameters
 app.get("/vehicles", async function(req, res) {
   let maxPrice = req.query["maxPrice"];
   let type = req.query["type"];
   try {
     if (maxPrice && type) {
-      let query = "SELECT name FROM vehicles WHERE price <= ?"
+      let query = "SELECT name FROM vehicles WHERE price <= ?";
       let db = await getDBConnection();
       let results;
       if (maxPrice === "none") {
@@ -54,16 +59,15 @@ app.get("/vehicles", async function(req, res) {
       res.type("text").status(400).send("Missing a Filter Parameter");
     }
   } catch (err) {
-    await db.close();
     res.type("text").status(500).send("Something on the server went wrong!");
   }
 });
 
-// gets a list of vehicles matching filter parameters
+// gets information of a specific vehicle
 app.get("/vehicles/:vehicle_name", async function(req, res) {
   const name = req.params["vehicle_name"];
   try {
-    let query = "SELECT * FROM vehicles WHERE name = ?"
+    let query = "SELECT * FROM vehicles WHERE name = ?";
     let db = await getDBConnection();
     let results = await db.get(query, name);
     res.type("json").send(results);
@@ -71,6 +75,35 @@ app.get("/vehicles/:vehicle_name", async function(req, res) {
     res.type("text").status(500).send("Something on the server went wrong!");
   }
 });
+
+// gets a lists of reviews of a vehicle
+app.get("/reviews/:vehicle_name", async function(req, res) {
+  const name = req.params["vehicle_name"];
+  try {
+    let query = "SELECT user, rating, comment, date FROM reviews WHERE vehicle = ? ORDER BY date DESC";
+    let db = await getDBConnection();
+    let results = await db.all(query, "test");
+    await db.close();
+    res.type("json").send(results);
+  } catch (err) {
+    res.type("text").status(500).send("Something on the server went wrong!");
+  }
+});
+
+// posts a new review for a vehicle
+app.post("/reviews/new/:vehicle_name", async function(req, res) {
+  const name = req.params["vehicle_name"];
+  console.log(name);
+  try {
+    const login = req.cookies["loggedIn"];
+    await reviewEligibilityCheck();
+    res.type("text").send("ok");
+  } catch (err) {
+    console.log(err);
+  }
+
+});
+
 
 /**
  * Establishes a database connection to the database and returns the database object.

@@ -20,11 +20,19 @@
    * TODO: Describe what your init function does here.
    */
   async function init() {
-    let filterButton = qs("#filter-container form");
-    filterButton.addEventListener("submit", async function(evt) {
+    qs("#filter-container form").addEventListener("submit", async function(evt) {
       evt.preventDefault();
       await getVehicles();
     });
+
+    document.getElementsByName("layout")[0].addEventListener("click", changeCardView);
+    document.getElementsByName("layout")[1].addEventListener("click", changeCardView);
+    qs("#rating-container > button").addEventListener("click", addReview);
+    id("add-review").addEventListener("submit", async function(evt) {
+      evt.preventDefault();
+      await submitReview();
+    });
+
 
     filterBehavior();
     toggleLoginForm();
@@ -107,6 +115,18 @@
     id(formId).classList.add("hidden");
   }
 
+
+  function changeCardView() {
+    let cards = qsa(".vehicle-card");
+    for (let i = 0; i < cards.length; i++) {
+      if (this.value === "compact") {
+        cards[i].classList.add("compact");
+      } else {
+        cards[i].classList.remove("compact");
+      }
+    }
+  }
+
   /**
    * get data of vehicles from API
    */
@@ -132,7 +152,7 @@
   async function displayVehicles(resp) {
     try {
       id("vehicles-view").innerHTML = "";
-      const vehicles = resp.split("\n");
+      const vehicles = resp.trim().split("\n");
       for (let i = 0; i < vehicles.length; i++) {
         let resp = await fetch("/vehicles/" + vehicles[i]);
         resp = await resp.json();
@@ -150,6 +170,9 @@
   function makeVehicleCard(resp) {
     let card = gen("section");
     card.classList.add("vehicle-card");
+    if (qs("input[name=layout]:checked").value === "compact") {
+      card.classList.add("compact");
+    }
     let name = gen("h2");
     name.textContent = resp["name"];
     let pic = gen("img");
@@ -171,7 +194,75 @@
    * @param {Object} resp - info of vehicle to show more details
    */
   async function vehiclePage(resp) {
+    try {
+      vehicleInfo(resp);
+      await vehicleReview(resp["name"]);
+    } catch (err) {
 
+    }
+  }
+
+  function vehicleInfo(resp) {
+    id("vehicle-container").classList.remove("hidden");
+    id("main-container").classList.add("hidden");
+    let name = gen("h1");
+    name.textContent = resp["name"];
+    let price = gen("p");
+    price.textContent = "$" + resp["price"];
+    let inStock = gen("p");
+    inStock.textContent = resp["in-stock"] + " left!";
+    let rating = gen("p");
+    if (resp["rating"] !== null) {
+      rating.textContent = "Rating: " + (Math.round(resp["rating"] * 100) / 100) + "/5";
+    } else {
+      rating.textContent = "No Ratings Yet!"
+    }
+    let pic = gen("img");
+    pic.src = resp["picture"];
+    pic.alt = resp["name"];
+    let info = gen("div");
+    info.appendChild(name);
+    info.appendChild(price);
+    info.appendChild(inStock);
+    info.appendChild(rating);
+    id("info-container").appendChild(info);
+    id("info-container").appendChild(pic);
+  }
+
+  async function vehicleReview(name) {
+    try {
+      id("reviews").innerHTML = "";
+      let resp = await fetch("/reviews/" + name);
+      await statusCheck(resp);
+      resp = await resp.json();
+      displayReviews(resp);
+    } catch (err) {
+
+    }
+  }
+
+  function displayReviews(resp) {
+    for (let i = 0; i < resp.length; i++) {
+      let review = gen("section");
+      review.classList.add("review-card");
+      let user = gen("p");
+      user.textContent = resp[i]["user"];
+      let rating = gen("p");
+      rating.textContent = "Rating: " + resp[i]["rating"];
+      let comment = gen("p");
+      comment.textContent = resp[i]["comment"];
+      let date = gen("p");
+      date.textContent = (new Date(resp[i]["date"])).toLocaleString();
+      review.appendChild(user);
+      review.appendChild(rating);
+      review.appendChild(comment);
+      review.appendChild(date);
+      id("reviews").appendChild(review);
+    }
+  }
+
+  function addReview() {
+    id("add-review").classList.remove("hidden");
   }
 
   /**
@@ -191,35 +282,6 @@
     } catch (err) {
 
     }
-  }
-
-  /**
-   * When all types is checked, every type is selected
-   * when all type is unchecked, every type is unchecked
-   */
-  function changeTypeButtons() {
-    let typeButtons = qsa("#type-filter input");
-    for (let i = 1; i < typeButtons.length; i++) {
-      if (this.checked) {
-        typeButtons[i].checked = true;
-      } else {
-        typeButtons[i].checked = false;
-      }
-    }
-  }
-
-  /**
-   * When all buttons are checked, all type will be checked automatically
-   */
-  function changeAllTypeButton() {
-    let allChecked = true;
-    let typeButtons = qsa("#type-filter input");
-    for (let i = 1; i < typeButtons.length; i++) {
-      if (!typeButtons[i].checked) {
-        allChecked = false;
-      }
-    }
-    qs("#type-filter input").checked = allChecked;
   }
 
   /** ------------------------------ Helper Functions  ------------------------------ */

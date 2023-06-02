@@ -165,6 +165,11 @@ header li > a {
   border-radius: 2em;
 }
 
+#filter-container form {
+  width: 100%;
+}
+
+
 #main-container button, #vehicle-container button {
   height: 50px;
   width: 100%;
@@ -189,7 +194,7 @@ header li > a {
   display: flex;
   background-color: #d4d4d4;
   margin-bottom: 20px;
-  height: 640px;
+  height: 800px;
   width: 65%;
   margin-top: 5%;
   overflow-y: scroll;
@@ -221,6 +226,17 @@ header li > a {
 
 .vehicle-card img {
   height: 50%;
+}
+
+.compact {
+  height: 126px;
+  width: 126px;
+  margin: 10px;
+  font-size: 8pt;
+}
+
+.compact img {
+  display: none;
 }
 
 /* form styles */
@@ -312,10 +328,6 @@ header li > a {
   color: black;
 }
 
-.hidden {
-  display: none;
-}
-
 #log-in-submit, #sign-up-submit {
   border: none;
   border-radius: 4px;
@@ -339,36 +351,94 @@ main a:link, main a:visited, main a:hover, main a:active {
 /* vehicle page styles */
 /* ------------------------------------------------------------------------- */
 #info-container img {
-  height: 250px;
-  width: auto;
+  height: auto;
+  width: 60%;
+}
+
+#info-container div {
+  width: 30%;
 }
 
 #vehicle-container {
-  background-color: #ebebeb;
+  background-color: #d4d4d4;
   text-align: left;
   padding: 40px;
   display: block;
   margin: 40px;
+  font-size: 12pt;
 }
 
+#info-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #ebebeb;
+  border-radius: 2em;
+  padding: 20px;
+  margin: 20px;
+}
 
+#info-container h1 {
+  font-size: 40pt;
+}
 
 #vehicle-container button {
   width: 200px;
 }
 
+#add-review {
+  background-color: #a7a7a7;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  height: 400px;
+  margin: 20px;
+  padding: 20px;
+  border: 5px solid black;
+  border-radius: 2em;
+  font-size: 17pt;
+}
+
+#add-review > select {
+  height: 15%;
+  width: 75px;
+  font-size: 12pt;
+  text-align: center;
+  font-family: 'Dela Gothic One', cursive;
+}
+
+#add-review > input {
+  font-size: 12pt;
+  font-family: 'Dela Gothic One', cursive;
+  height: 30%;
+}
+
+#add-review > span {
+  align-self: flex-end;
+  width: fit-content;
+  margin-right: 50px;
+  font-size: 17pt;
+}
+
+#add-review > button {
+  align-self: flex-end;
+}
+
 #reviews {
   height: 200px;
   overflow-y: scroll;
+  margin-top: 20px;
 }
 
 #reviews::-webkit-scrollbar {
   display: none;
 }
 
-.review {
+.review-card {
   background-color: white;
-  font-size: 12pt;
+  font-size: 8pt;
+  padding: 5px;
+  margin: 15px;
 }
 
 .hidden {
