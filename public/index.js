@@ -40,6 +40,7 @@
     navigateBetweenForms();
     closeForms();
     addToCartButtonBehavior();
+    toggleHomeScreen();
 
     try {
       await getVehicles();
@@ -96,56 +97,71 @@
    */
   function addItemToCart() {
     removeEmptyCartMessage();
+    unhideCheckoutButton();
+    incrementCartItemCount();
+
+    // TODO: factor into helper methods
     let vehicleName = id("selected-name").textContent;
+    let vehicleID = vehicleName.split(" ").join("-").toLowerCase();
     let price = id("selected-price").textContent;
-    let stock = id("selected-stock").textContent;
-    let vehicleImg = id("selected-img").src;
-    let vehicleImgAlt = id("selected-img").alt;
+    incrementCartTotal(parseInt(price));
 
-    let card = gen("div");
-    card.classList.add("cart-card");
+    if(qs(`#cart-card-container #${vehicleID}`)) {
+      incrementVehicleCartCount(vehicleID);
+    } else {
+      // TODO: make sure number of vehicles in cart is <= current stock
+      let stock = id("selected-stock").textContent;
+      let vehicleImg = id("selected-img").src;
+      let vehicleImgAlt = id("selected-img").alt;
 
-    let img = gen("img");
-    img.src = vehicleImg;
-    img.alt = vehicleImgAlt;
-    img.classList.add("cart-img");
-    card.appendChild(img);
+      let card = gen("div");
+      card.classList.add("cart-card");
+      card.id = vehicleName.split(" ").join("-").toLowerCase();
+      console.log(card.id);
 
-    let infoContainer = gen('div');
-    infoContainer.classList.add('cart-card-info');
+      let img = gen("img");
+      img.src = vehicleImg;
+      img.alt = vehicleImgAlt;
+      img.classList.add("cart-img");
+      card.appendChild(img);
 
-    let title = gen("h1");
-    title.textContent = vehicleName;
-    title.classList.add("cart-card-title");
-    infoContainer.appendChild(title);
+      let infoContainer = gen('div');
+      infoContainer.classList.add('cart-card-info');
 
-    let cardPrice = gen("h2");
-    cardPrice.textContent = "$" + price;
-    cardPrice.classList.add("cart-card-price");
-    infoContainer.appendChild(cardPrice);
+      let title = gen("h1");
+      title.textContent = vehicleName;
+      title.classList.add("cart-card-title");
+      infoContainer.appendChild(title);
 
-    let countContainer = gen("div");
-    countContainer.classList.add("cart-card-count-container");
+      let cardPrice = gen("h2");
+      cardPrice.textContent = "$" + price;
+      cardPrice.classList.add("cart-card-price");
+      infoContainer.appendChild(cardPrice);
 
-    let decrementButton = gen("button");
-    decrementButton.textContent = "-";
-    decrementButton.classList.add("count-btn");
-    countContainer.appendChild(decrementButton);
+      let countContainer = gen("div");
+      countContainer.classList.add("cart-card-count-container");
 
-    let count = gen("span");
-    count.textContent = "1";
-    count.classList.add("cart-card-count");
-    countContainer.appendChild(count);
+      //TODO: add avent listener for decrement function
+      let decrementButton = gen("button");
+      decrementButton.textContent = "-";
+      decrementButton.classList.add("count-btn");
+      countContainer.appendChild(decrementButton);
 
-    let incrementButton = gen("button");
-    incrementButton.textContent = "+";
-    incrementButton.classList.add("count-btn");
-    countContainer.appendChild(incrementButton);
-    infoContainer.appendChild(countContainer);
+      let count = gen("span");
+      count.textContent = "1";
+      count.classList.add("cart-card-count");
+      countContainer.appendChild(count);
 
-    card.appendChild(infoContainer);
+      let incrementButton = gen("button");
+      incrementButton.textContent = "+";
+      incrementButton.classList.add("count-btn");
+      countContainer.appendChild(incrementButton);
+      infoContainer.appendChild(countContainer);
 
-    id("cart").appendChild(card);
+      card.appendChild(infoContainer);
+
+      id("cart-card-container").appendChild(card);
+    }
   }
 
   /**
@@ -153,9 +169,82 @@
    * an item is added
    */
   function removeEmptyCartMessage() {
-    if(!id("empty-cart-message").classList.contains('hidden')) {
+    // TODO: change when number of cart items is implemented
+    if(!id("empty-cart-message").classList.contains("hidden")) {
       id("empty-cart-message").classList.add("hidden");
     }
+  }
+
+  /**
+   * helper function that unhides the checkout button when the cart is
+   * non-empty
+   */
+  function unhideCheckoutButton() {
+    // TODO: combine with above method
+    if(id("check-out-btn").classList.contains("hidden")) {
+      id("check-out-btn").classList.remove("hidden");
+    }
+    if(id("cart-info").classList.contains("hidden")) {
+      id("cart-info").classList.remove("hidden");
+    }
+    if(id("cart-card-container").classList.contains("hidden")) {
+      id("cart-card-container").classList.remove("hidden");
+    }
+  }
+
+  /**
+   * helper function that increments the count of items in the cart when
+   * and item is added
+   */
+  function incrementCartItemCount() {
+    id("cart-items").textContent = parseInt(id("cart-items").textContent) + 1;
+  }
+
+  /**
+   * helper function that increments the total cost of items in the cart when
+   * and item is added
+   */
+  function incrementCartTotal(currentCost) {
+    id("cart-total").textContent = parseInt(id("cart-total").textContent) + currentCost;
+  }
+
+  /**
+   * helper function that deccrements the count of items in the cart when
+   * and item is added
+   */
+  function decrementCartItemCount() {
+    id("cart-items").textContent = parseInt(id("cart-items").textContent) - 1;
+  }
+
+  /**
+   * helper function that decrements the total cost of items in the cart when
+   * and item is added
+   */
+  function decrementCartTotal(currentCost) {
+    id("cart-total").textContent = parseInt(id("cart-total").textContent) + 1;
+  }
+
+  /**
+   * helper function that increments the count for a particular vehicle card
+   * in the cart
+   * @param {string} vehicleID - id of the vehicle card we want to increment
+   * the count for
+   */
+  function incrementVehicleCartCount(vehicleID) {
+    let currentCount = qs(`#${vehicleID} .cart-card-count`);
+    currentCount.textContent = parseInt(currentCount.textContent) + 1;
+  }
+
+
+   /**
+   * helper function that decrements the count for a particular vehicle card
+   * in the cart
+   * @param {string} vehicleID - id of the vehicle card we want to increment
+   * the count for
+   */
+  function decrementVehicleCartCount(vehicleID) {
+    let currentCount = qs(`#${vehicleID} .cart-card-count`);
+    currentCount.textContent = parseInt(currentCount.textContent) - 1;
   }
 
   /**
@@ -200,6 +289,18 @@
     qs(".search-bar-container").addEventListener("click", () => {
       hideForm("log-in-form");
       hideForm("sign-up-form");
+    });
+  }
+
+  /**
+   * toggles the home screen back into view when the "Back to Searching!"
+   * button is clicked and clears the vehicle info card
+   */
+  function toggleHomeScreen() {
+    id("back-to-home-btn").addEventListener("click", () => {
+      id("vehicle-container").classList.add("hidden");
+      id("main-container").classList.remove("hidden");
+      id("info-container").innerHTML = "";
     });
   }
 
@@ -310,28 +411,69 @@
   function vehicleInfo(resp) {
     id("vehicle-container").classList.remove("hidden");
     id("main-container").classList.add("hidden");
+
+    let info = genVehicleInfoElements(resp);
+
+    let pic = gen("img");
+    pic.src = resp["picture"];
+    pic.alt = resp["name"];
+    pic.id = "selected-img";
+
+    id("info-container").appendChild(info);
+    id("info-container").appendChild(pic);
+  }
+
+  /**
+   * helper function that generates the html elements for displaying a vehicles
+   * info on the page
+   * @param {JSON} resp
+   * @returns {HTMLElement} - div containing the info for a particular vehicle
+   */
+  function genVehicleInfoElements(resp) {
     let name = gen("h1");
+    name.id = "selected-name";
     name.textContent = resp["name"];
+
     let price = gen("p");
-    price.textContent = "$" + resp["price"];
+    price.textContent = "$";
+    let priceAmount = gen("span");
+    priceAmount.textContent = resp["price"];
+    priceAmount.id = "selected-price";
+    price.appendChild(priceAmount);
+
     let inStock = gen("p");
-    inStock.textContent = resp["in-stock"] + " left!";
+    inStock.textContent = " left!";
+    let inStockAmount = gen("span");
+    inStockAmount.textContent = resp["in-stock"];
+    inStockAmount.id = "selected-stock";
+    inStock.prepend(inStockAmount);
+
+    let rating = genVehicleRating(resp);
+
+    let info = gen("div");
+    info.appendChild(name);
+    info.appendChild(price);
+    info.appendChild(inStock);
+    info.appendChild(rating);
+
+    return info;
+  }
+
+  /**
+   * helper function that generates the html elements for displaying a vehicles
+   * rating on the page
+   * @param {JSON} resp
+   * @returns {HTMLElement} - paragraph containing the vehicle rating if present,
+   * or "No Ratings Yet!" if not
+   */
+  function genVehicleRating(resp) {
     let rating = gen("p");
     if (resp["rating"] !== null) {
       rating.textContent = "Rating: " + (Math.round(resp["rating"] * 100) / 100) + "/5";
     } else {
       rating.textContent = "No Ratings Yet!"
     }
-    let pic = gen("img");
-    pic.src = resp["picture"];
-    pic.alt = resp["name"];
-    let info = gen("div");
-    info.appendChild(name);
-    info.appendChild(price);
-    info.appendChild(inStock);
-    info.appendChild(rating);
-    id("info-container").appendChild(info);
-    id("info-container").appendChild(pic);
+    return rating;
   }
 
   async function vehicleReview(name) {
