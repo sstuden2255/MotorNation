@@ -43,6 +43,7 @@
     addToCartButtonBehavior();
     backFromVehicleView();
     backFromCheckout();
+    updateCartObjFromLocalStorage();
 
     try {
       await getVehicles();
@@ -201,6 +202,15 @@
   }
 
   /**
+   * updates the module global variable for the cart from local storage
+   */
+  function updateCartObjFromLocalStorage(){
+    if (window.localStorage.getItem("cart")) {
+      cartObj = JSON.parse(window.localStorage.getItem("cart"));
+    }
+  }
+
+  /**
    * intiliazes button for adding selected item to cart
    */
   function addToCartButtonBehavior() {
@@ -224,7 +234,7 @@
       incrementVehicleCartCount(vehicleID);
     } else {
       cartObj[vehicleID] = vehicleObj;
-      // TODO: update localstorage
+      window.localStorage.setItem("cart", JSON.stringify(cartObj));
       let card = gen("div");
       card.classList.add("cart-card");
       card.id = vehicleID;
@@ -237,6 +247,7 @@
 
       id("cart-card-container").appendChild(card);
     }
+    console.log(cartObj);
   }
 
   /**r
@@ -255,8 +266,8 @@
     vehicleObj["id"] = vehicleID;
     vehicleObj["img-src"] = vehicleImg;
     vehicleObj["img-alt"] = vehicleImgAlt;
-    vehicleObj["price"] = price;
-    vehicleObj["count"] = 1; // TODO: make sure no off by one here
+    vehicleObj["price"] = parseInt(price);
+    vehicleObj["count"] = 1;
     return vehicleObj;
   }
 
@@ -275,7 +286,7 @@
    * helper function that generates the vehicle image
    * for a card in the cart
    * @param {string} source - source of image
-   * @param {*} alt - alt text for image
+   * @param {string} alt - alt text for image
    * @returns {HTMLElement} - img element of vehicle
    */
   function genVehicleImage(source, alt) {
@@ -387,8 +398,8 @@
     let currentCount = qs(`#${vehicleID} .cart-card-count`);
     if (enoughInStock(vehicleID)) {
       currentCount.textContent = parseInt(currentCount.textContent) + 1;
-      cartObj[vehicleID][count] += 1;
-      // TODO: update localstorage
+      cartObj[vehicleID]["count"] += 1;
+      window.localStorage.setItem("cart", JSON.stringify(cartObj));
     }
   }
 
@@ -430,13 +441,12 @@
     let currentCount = qs(`#${vehicleID} .cart-card-count`);
     if (parseInt(currentCount.textContent) > 1) {
       currentCount.textContent = parseInt(currentCount.textContent) - 1;
-      cartObj[vehicleID][count] -= 1;
-      // TODO: update localstorage
+      cartObj[vehicleID]["count"] -= 1;
     } else {
       id("cart-card-container").removeChild(id(vehicleID))
       delete cartObj[vehicleID];
-      // TODO: update localstorage
     }
+    window.localStorage.setItem("cart", JSON.stringify(cartObj));
   }
 
   /**
