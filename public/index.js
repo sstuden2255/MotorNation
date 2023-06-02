@@ -21,20 +21,7 @@
    * initializes event handlers required at page load
    */
   async function init() {
-    qs("#filter-container form").addEventListener("submit", async function(evt) {
-      evt.preventDefault();
-      await getVehicles();
-    });
-
-    document.getElementsByName("layout")[0].addEventListener("click", changeCardView);
-    document.getElementsByName("layout")[1].addEventListener("click", changeCardView);
-    qs("#rating-container > button").addEventListener("click", addReview);
-    id("add-review").addEventListener("submit", async function(evt) {
-      evt.preventDefault();
-      await submitReview();
-    });
-
-    filterBehavior();
+    mainPageBehaviors();
     toggleLoginForm();
     toggleCart();
     toggleCheckoutScreen();
@@ -44,6 +31,14 @@
     backFromVehicleView();
     backFromCheckout();
     updateCartObjFromLocalStorage();
+    vehicleViewBehaviors();
+    userFormBehaviors();
+    accountFunctions();
+
+    console.log(document.cookie);
+    if (document.cookie) {
+      showAccount();
+    }
 
     try {
       await getVehicles();
@@ -83,7 +78,8 @@
   function cartButtonBehavior() {
     let logInHidden = id("log-in-form").classList.contains("hidden");
     let signUpHidden = id("sign-up-form").classList.contains("hidden");
-    if (logInHidden && signUpHidden) {
+    let accountHidden = id("account-form").classList.contains("hidden");
+    if (logInHidden && signUpHidden && accountHidden) {
       toggleForm("cart");
     }
   }
@@ -417,6 +413,36 @@
     }
   }
 
+  function closeForms() {
+    qs("#log-in-form .close").addEventListener('click', () => {
+      toggleForm("log-in-form");
+    });
+
+    qs("#sign-up-form .close").addEventListener('click', () => {
+      toggleForm("sign-up-form");
+    });
+
+    qs("#cart .close").addEventListener('click', () => {
+      toggleForm("cart");
+    });
+
+    qs("#account-form .close").addEventListener('click', () => {
+      toggleForm("account-form");
+    });
+
+    id("main-container").addEventListener("click", () => {
+      hideForm("log-in-form");
+      hideForm("sign-up-form");
+      hideForm("account-form");
+    });
+
+    qs(".search-bar-container").addEventListener("click", () => {
+      hideForm("log-in-form");
+      hideForm("sign-up-form");
+      hideForm("account-form");
+    });
+  }
+
   /**
    * helper function that decrements the total cost of items in the cart when
    * and item is added
@@ -541,6 +567,7 @@
    */
   async function vehiclePage(resp) {
     try {
+      id("info-container").innerHTML = "";
       vehicleInfo(resp);
       await vehicleReview(resp["name"]);
     } catch (err) {
@@ -664,11 +691,40 @@
   }
 
   /**
-   * Set up how inputs for filters should behave
+   * Set up how buttons on main page behave
    */
-  function filterBehavior() {
-    let reset = id("reset");
-    reset.addEventListener("click", resetFilter);
+  function mainPageBehaviors() {
+    qs("header > nav > div").addEventListener("click", home);
+    id("reset").addEventListener("click", resetFilter);
+    qs("#filter-container form").addEventListener("submit", async function(evt) {
+      evt.preventDefault();
+      await getVehicles();
+    });
+    document.getElementsByName("layout")[0].addEventListener("click", changeCardView);
+    document.getElementsByName("layout")[1].addEventListener("click", changeCardView);
+  }
+
+  function vehicleViewBehaviors() {
+    qs("#rating-container > button").addEventListener("click", addReview);
+    id("add-review").addEventListener("submit", async function(evt) {
+    evt.preventDefault();
+    await submitReview();
+    });
+    qs("#action-container > button").addEventListener("click", mainPageView);
+  }
+
+  async function home() {
+    try {
+      await resetFilter();
+      mainPageView();
+    } catch (err) {
+
+    }
+  }
+
+  function mainPageView() {
+    id("main-container").classList.remove("hidden");
+    id("vehicle-container").classList.add("hidden");
   }
 
   /**
@@ -682,6 +738,99 @@
     } catch (err) {
 
     }
+  }
+
+  /**
+   * sets up signing up and logging in
+   */
+  function userFormBehaviors() {
+    qs("#sign-up-form form").addEventListener("submit", async function(evt) {
+      evt.preventDefault();
+      await signUp();
+    });
+    qs("#log-in-form form").addEventListener("submit", async function(evt) {
+      evt.preventDefault();
+      await logIn();
+    });
+  }
+
+  async function signUp() {
+    if (id("set-password").value === id("confirm-password").value) {
+      qs("#sign-up-form > form > p").classList.add("hidden");
+      try {
+        let data = new FormData();
+        data.append("username", id("create-user").value);
+        data.append("email", id("create-email").value);
+        data.append("password", id("set-password").value);
+        let resp = await fetch("/account/create", {method: "POST", body: data});
+        await statusCheck(resp);
+        resp = await resp.json();
+        await userLogIn(resp["username"], resp["password"]);
+        /** add a profile page where can deposit; */
+      } catch (err) {
+
+      }
+    } else { // passwords don't match
+      qs("#sign-up-form > form > p").classList.remove("hidden");
+    }
+  }
+
+  async function logIn() {
+    try {
+      await userLogIn(id("login-user").value, id("login-password").value);
+    } catch (err) {
+
+    }
+  }
+
+  async function userLogIn(username, password) {
+    try {
+      let data = new FormData();
+      data.append("username", username);
+      data.append("password", password);
+      let resp = await fetch("/login", {method: "POST", body: data});
+      await statusCheck(resp);
+      showAccount();
+    } catch (err) {
+
+    }
+  }
+
+  function showAccount() {
+    id("profile-btn").classList.add("hidden");
+    id("account-btn").classList.remove("hidden");
+    hideForm("sign-up-form");
+    hideForm("log-in-form");
+  }
+
+  function accountFunctions() {
+    id("account-btn").addEventListener("click", accountButtonBehavior);
+    id("deposit").addEventListener("click", deposit);
+    id("history").addEventListener("click", history);
+    id("log-out").addEventListener("click", logOut);
+
+  }
+
+  function accountButtonBehavior() {
+    let cart = id("cart").classList.contains("hidden");
+    if (cart) {
+      toggleForm("account-form");
+    }
+  }
+
+  function deposit() {
+
+  }
+
+  function history() {
+
+  }
+
+  function logOut() {
+    document.cookie = "username=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
+    id("account-form").classList.add("hidden");
+    id("account-btn").classList.add("hidden");
+    id("profile-btn").classList.remove("hidden");
   }
 
   /** ------------------------------ Helper Functions  ------------------------------ */
