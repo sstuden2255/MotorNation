@@ -17,7 +17,7 @@
   window.addEventListener("load", init);
 
   /**
-   * TODO: Describe what your init function does here.
+   * initializes event handlers required at page load
    */
   async function init() {
     qs("#filter-container form").addEventListener("submit", async function(evt) {
@@ -36,8 +36,10 @@
 
     filterBehavior();
     toggleLoginForm();
+    toggleCart();
     navigateBetweenForms();
     closeForms();
+    addToCartButtonBehavior();
 
     try {
       await getVehicles();
@@ -50,11 +52,110 @@
    * Adds the event listener necessary for toggling the login popup
    */
   function toggleLoginForm() {
-    id("profile-btn").addEventListener("click", () => {
-      if (id("sign-up-form").classList.contains("hidden")) {
-        id("log-in-form").classList.toggle("hidden");
-      }
-    });
+    id("profile-btn").addEventListener("click", profileButtonBehavior);
+  }
+
+  /**
+   * helper function that limits certain behavior when clicking profile button
+   */
+  function profileButtonBehavior() {
+    let signUpHidden = id("sign-up-form").classList.contains("hidden");
+    let cartHidden = id("cart").classList.contains("hidden");
+    if (signUpHidden && cartHidden) {
+      toggleForm("log-in-form");
+    }
+  }
+
+  /**
+   * Adds the event listener necessary for toggling the cart into view
+   */
+  function toggleCart() {
+    id("cart-btn").addEventListener("click", cartButtonBehavior);
+  }
+
+  /**
+   * helper function that limits certain behavior when clicking cart button
+   */
+  function cartButtonBehavior() {
+    let logInHidden = id("log-in-form").classList.contains("hidden");
+    let signUpHidden = id("sign-up-form").classList.contains("hidden");
+    if (logInHidden && signUpHidden) {
+      toggleForm("cart");
+    }
+  }
+
+  /**
+   * intiliazes button for adding selected item to cart
+   */
+  function addToCartButtonBehavior() {
+    id("add-to-cart-btn").addEventListener("click", addItemToCart);
+  }
+
+  /**
+   * adds the selected item to the cart
+   */
+  function addItemToCart() {
+    removeEmptyCartMessage();
+    let vehicleName = id("selected-name").textContent;
+    let price = id("selected-price").textContent;
+    let stock = id("selected-stock").textContent;
+    let vehicleImg = id("selected-img").src;
+    let vehicleImgAlt = id("selected-img").alt;
+
+    let card = gen("div");
+    card.classList.add("cart-card");
+
+    let img = gen("img");
+    img.src = vehicleImg;
+    img.alt = vehicleImgAlt;
+    img.classList.add("cart-img");
+    card.appendChild(img);
+
+    let infoContainer = gen('div');
+    infoContainer.classList.add('cart-card-info');
+
+    let title = gen("h1");
+    title.textContent = vehicleName;
+    title.classList.add("cart-card-title");
+    infoContainer.appendChild(title);
+
+    let cardPrice = gen("h2");
+    cardPrice.textContent = "$" + price;
+    cardPrice.classList.add("cart-card-price");
+    infoContainer.appendChild(cardPrice);
+
+    let countContainer = gen("div");
+    countContainer.classList.add("cart-card-count-container");
+
+    let decrementButton = gen("button");
+    decrementButton.textContent = "-";
+    decrementButton.classList.add("count-btn");
+    countContainer.appendChild(decrementButton);
+
+    let count = gen("span");
+    count.textContent = "1";
+    count.classList.add("cart-card-count");
+    countContainer.appendChild(count);
+
+    let incrementButton = gen("button");
+    incrementButton.textContent = "+";
+    incrementButton.classList.add("count-btn");
+    countContainer.appendChild(incrementButton);
+    infoContainer.appendChild(countContainer);
+
+    card.appendChild(infoContainer);
+
+    id("cart").appendChild(card);
+  }
+
+  /**
+   * helper function that removes the empty cart messsage when
+   * an item is added
+   */
+  function removeEmptyCartMessage() {
+    if(!id("empty-cart-message").classList.contains('hidden')) {
+      id("empty-cart-message").classList.add("hidden");
+    }
   }
 
   /**
@@ -87,6 +188,10 @@
       toggleForm("sign-up-form");
     });
 
+    qs("#cart .close").addEventListener('click', () => {
+      toggleForm("cart");
+    });
+
     id("main-container").addEventListener("click", () => {
       hideForm("log-in-form");
       hideForm("sign-up-form");
@@ -100,7 +205,7 @@
 
 
   /**
-   * toggles a given form in our out of view
+   * helper function that toggles a given form in our out of view
    * @param {string} formId - id of the form to toggle
    */
   function toggleForm(formId) {
@@ -273,7 +378,9 @@
     reset.addEventListener("click", resetFilter);
   }
 
-
+  /**
+   * TODO:
+   */
   async function resetFilter() {
     qs("input[name=type]").checked = true;
     qs("input[name=price]").checked = true;
