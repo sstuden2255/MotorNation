@@ -53,7 +53,7 @@
    */
   function toggleLoginForm() {
     id("profile-btn").addEventListener("click", profileButtonBehavior);
-  }
+      }
 
   /**
    * helper function that limits certain behavior when clicking profile button
@@ -336,7 +336,6 @@
 
   async function vehicleReview(name) {
     try {
-      id("reviews").innerHTML = "";
       let resp = await fetch("/reviews/" + name);
       await statusCheck(resp);
       resp = await resp.json();
@@ -347,6 +346,7 @@
   }
 
   function displayReviews(resp) {
+    id("reviews").innerHTML = "";
     for (let i = 0; i < resp.length; i++) {
       let review = gen("section");
       review.classList.add("review-card");
@@ -368,6 +368,17 @@
 
   function addReview() {
     id("add-review").classList.remove("hidden");
+    qs("#add-review input").value = "";
+  }
+
+  async function submitReview() {
+    try {
+      let resp = await fetch("/reviews/new" + name);
+      await statusCheck(resp);
+
+    } catch (err) {
+
+    }
   }
 
   /**
