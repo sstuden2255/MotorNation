@@ -12,6 +12,8 @@ CREATE TABLE "users" (
 	"email"	TEXT NOT NULL,
 	"password"	TEXT NOT NULL,
 	"balance"	INTEGER NOT NULL,
+	"first-name"	TEXT NOT NULL,
+	"last-name"	TEXT NOT NULL,
 	PRIMARY KEY("email")
 );
 
