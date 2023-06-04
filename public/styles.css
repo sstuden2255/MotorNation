@@ -170,7 +170,7 @@ header li > a {
 }
 
 
-#main-container button, #vehicle-container button {
+#main-container button, #vehicle-container button, #check-out-container button {
   height: 50px;
   width: 100%;
   background-color: white;
@@ -178,7 +178,9 @@ header li > a {
   font-family: 'Dela Gothic One', cursive;
 }
 
-#main-container button:hover, #vehicle-container button:hover {
+#main-container button:hover,
+#vehicle-container button:hover,
+#check-out-container button:hover {
   background-color: black;
   color: white;
 }
@@ -222,6 +224,7 @@ header li > a {
 
 .vehicle-card:hover {
   background-color: rgb(90, 90, 90);
+  cursor: pointer;
 }
 
 .vehicle-card img {
@@ -385,6 +388,20 @@ main a:link, main a:visited, main a:hover, main a:active {
   background-color: rgba(0, 0, 0, 0.75);
 }
 
+#cart-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+}
+
+#check-out-btn {
+  margin-top: 10px;
+}
+
+#cart h2 {
+  margin-block: 0;
+}
+
 #cart .cart-card {
   display: flex;
   width: 400px;
@@ -446,6 +463,15 @@ main a:link, main a:visited, main a:hover, main a:active {
   margin-right: 5px;
 }
 
+#cart-card-container {
+  overflow-y: scroll;
+  height: 400px;
+}
+
+#cart-card-container::-webkit-scrollbar {
+  display: none;
+}
+
 /* vehicle page styles */
 /* ------------------------------------------------------------------------- */
 #info-container img {
@@ -457,7 +483,7 @@ main a:link, main a:visited, main a:hover, main a:active {
   width: 30%;
 }
 
-#vehicle-container {
+#vehicle-container, #check-out-container {
   background-color: #d4d4d4;
   text-align: left;
   padding: 40px;
@@ -567,4 +593,8 @@ main a:link, main a:visited, main a:hover, main a:active {
 
 .hidden {
   display: none !important;
+}
+
+button:hover {
+  cursor: pointer;
 }

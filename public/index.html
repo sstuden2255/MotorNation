@@ -30,35 +30,24 @@
         <h1>Motor Nation</h1>
         <ul>
           <li><a href="#" id="cart-btn">Cart</a></li>
-          <li><a href="#" id="profile-btn">Profile</a></li>
+          <li><a href="#" id="profile-btn">Log in</a></li>
           <li><a href="#" id="account-btn" class="hidden">My Account</a></li>
         </ul>
       </nav>
-<!--  -->
       <div id="cart" class="form-container hidden">
         <div class="overlay"></div>
         <div class="form-header">
           <span class="close">&times;</span>
         </div>
         <h2>Cart</h2>
-        <ul id="buyItems">
-            <h3 id="empty-cart-message">Your shopping cart is empty!</h3>
-            <!-- <li class="buyItem">
-      <img src="Images/producs-images/Mobiles/galaxynote10.png">
-      <div>
-      <h5>Products Name</h5>
-      <h6>$199</h6>
-      <div>
-        <button>-</button>
-        <span class="countOfProduct">1</span>
-        <button>+</button>
-      </div>
-      </div>
-      </li> -->
-        </ul>
+        <div id="cart-info" class="hidden">
+          <p><span id="cart-items">0</span> items</p>
+          <p>$<span id="cart-total">0</span> total</p>
+        </div>
+        <h3 id="empty-cart-message">Your shopping cart is empty!</h3>
+        <div id="cart-card-container" class="hidden"></div>
         <button id="check-out-btn" class="hidden">Check out</button>
       </div>
-<!--  -->
       <div class="search-bar-container">
         <input type="text" placeholder="Search for Vehicles, Types, Maximum Price..." name="search">
         <button type="submit">Search</button>
@@ -180,19 +169,11 @@
       </section>
       <section id="vehicle-container" class="hidden">
         <section id="action-container">
-          <button>Back to Searching!</button>
+          <button id="vehicle-view-back-btn">Back to Searching!</button>
           <button id="add-to-cart-btn">Add to Cart</button>
           <button>Buy Now!</button>
         </section>
-        <section id="info-container">
-          <h1 id="selected-name">generate this TITLE</h1>
-          <div>
-            <p><span id="selected-rating">x</span>/5 stars</p>
-            <p>Price: <span id="selected-price">[price]</span></p>
-            <p><span id="selected-stock">x</span> left in stock</p>
-          </div>
-          <img id="selected-img" src="img/logo.png" alt="vehicle picture">
-        </section>
+        <section id="info-container"></section>
         <section id="rating-container">
           <h2>Customer Reviews</h2>
           <p id="no-reviews">No Reviews Yet On This Vehicle</p>
@@ -213,6 +194,11 @@
           <section id="reviews">
           </section>
         </section>
+      </section>
+      <section id="check-out-container" class="hidden">
+        <button id="check-out-back-btn">Back to Searching!</button>
+        <section id="check-out-contents"></section>
+        <button id="confirm-purchase-btn">Confirm Purchase</button>
       </section>
       <section id="history-page" class="hidden">
         <h2>Transaction History</h2>
