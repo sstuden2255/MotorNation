@@ -82,7 +82,7 @@ app.get("/reviews/:vehicle_name", async function(req, res) {
   try {
     let query = "SELECT user, rating, comment, date FROM reviews WHERE vehicle = ? ORDER BY date DESC";
     let db = await getDBConnection();
-    let results = await db.all(query, "test");
+    let results = await db.all(query, name);
     await db.close();
     res.type("json").send(results);
   } catch (err) {
@@ -91,18 +91,30 @@ app.get("/reviews/:vehicle_name", async function(req, res) {
 });
 
 // posts a new review for a vehicle
-app.post("/reviews/new/:vehicle_name", async function(req, res) {
-  const name = req.params["vehicle_name"];
+app.post("/reviews/new", async function(req, res) {
+  const name = req.body["vehicle"];
+  const user = req.body["user"];
+  const rating = parseInt(req.body["rating"]);
+  const comment = req.body["comment"];
   try {
-    const login = req.cookies["loggedIn"];
-    console.log(login);
-    let eligible = true; // await reviewEligibilityCheck(req.cookies);
-    if (req.cookies["loggedIn"] === "false") {
-      res.type("text").status(400).send("Please Log In!");
+    if (name && user && rating && comment) {
+      let query = "SELECT user FROM transactions WHERE user = ? AND vehicle = ?;";
+      let db = await getDBConnection();
+      let results = await db.get(query, [user, name]);
+      if (results) {
+        query = "INSERT INTO reviews (vehicle, user, rating, comment) VALUES (?, ?, ?, ?);";
+        results = await db.run(query, [name, user, rating, comment]);
+        query = "SELECT user, rating, comment, date FROM reviews WHERE id = ?"
+        results = await db.get(query, results["lastID"]);
+        await db.close();
+        res.type("json").send(results);
+      } else {
+        await db.close();
+        res.type("text").status(400).send("You have not purchased this vehicle.");
+      }
     } else {
-
+      res.type("text").status(400).send("Not enough information provided to leave review.");
     }
-    res.type("text").send("ok");
   } catch (err) {
     res.type("text").status(500).send("Something on the server went wrong!");
   }
@@ -165,6 +177,74 @@ app.post("/login", async function(req, res) {
   }
 });
 
+// returns a user's balance
+app.post("/balance", async function(req, res) {
+  const user = req.body["user"];
+  res.type("text");
+  try {
+    if (user) {
+      let query = "SELECT balance FROM users WHERE username = ?;";
+      let db = await getDBConnection();
+      let results = await db.get(query, user);
+      await db.close();
+      if (results) {
+        res.send("" + results["balance"]);
+      } else {
+        res.status(400).send("Username does not exist.");
+      }
+    } else {
+      res.status(400).send("Not logged In");
+    }
+  } catch (err) {
+    res.status(500).send("Something on the server went wrong!");
+  }
+});
+
+// deposit into a user's account
+app.post("/deposit", async function(req, res) {
+  const user = req.body["user"];
+  const amount = parseInt(req.body["amount"]);
+  res.type("text");
+  try {
+    if (!user) {
+      res.status(400).send("Not logged in");
+    } else if (!amount) {
+      res.status(400).send("Insert deposit amount");
+    } else {
+      let query = "UPDATE users SET balance = balance + ? WHERE username LIKE ?;";
+      let db = await getDBConnection();
+      await db.run(query, [amount, user]);
+      await db.close();
+      res.send("Deposit Successful");
+    }
+  } catch (err) {
+    res.status(500).send("Something on the server went wrong!");
+  }
+});
+
+// returns the transaction history of a user
+app.post("/account/history", async function(req, res) {
+  const user = req.body["user"];
+  try {
+    if (user) {
+      let query = "SELECT vehicle, date, code FROM transactions WHERE user = ? ORDER BY date DESC;";
+      let db = await getDBConnection();
+      let results = await db.all(query, user);
+      await db.close();
+      res.type("json").send(results);
+    } else {
+      res.type("text").status(400).send("Not Logged In");
+    }
+  } catch (err) {
+    res.status(500).send("Something on the server went wrong!");
+  }
+});
+
+/**
+ * Checks if a user exist in the database
+ * @param {string} username - provided username
+ * @returns {boolean} whether a username exists in the database
+*/
 async function checkUserName(username) {
   try {
     let query = "SELECT username FROM users WHERE username = ?";
@@ -172,7 +252,7 @@ async function checkUserName(username) {
     let results = await db.get(query, username);
     return results;
   } catch (err) {
-
+    return false;
   }
 }
 

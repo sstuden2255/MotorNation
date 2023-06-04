@@ -164,7 +164,7 @@
 
   /**
    * Toggles which form is displayed to the user
-   */
+  */
   function switchForms() {
     toggleForm("log-in-form");
     toggleForm("sign-up-form");
@@ -175,21 +175,25 @@
    * sign up forms
    */
   function closeForms() {
-    qs("#log-in-form .close").addEventListener('click', () => {
+    qs("#log-in-form .close").addEventListener("click", () => {
       toggleForm("log-in-form");
     });
 
-    qs("#sign-up-form .close").addEventListener('click', () => {
+    qs("#sign-up-form .close").addEventListener("click", () => {
       toggleForm("sign-up-form");
     });
 
-    qs("#cart .close").addEventListener('click', () => {
+    qs("#cart .close").addEventListener("click", () => {
       toggleForm("cart");
     });
 
-    qs("#account-form .close").addEventListener('click', () => {
+    qs("#account-form .close").addEventListener("click", () => {
       toggleForm("account-form");
     });
+
+    qs("#deposit-form .close").addEventListener("click", () => {
+      toggleForm("deposit-form");
+    })
 
     id("main-container").addEventListener("click", () => {
       hideForm("log-in-form");
@@ -221,7 +225,9 @@
     id(formId).classList.add("hidden");
   }
 
-
+  /**
+   * changes how vehicles are displayed on main page
+   */
   function changeCardView() {
     let cards = qsa(".vehicle-card");
     for (let i = 0; i < cards.length; i++) {
@@ -309,6 +315,10 @@
     }
   }
 
+  /**
+   * displays information of a specific vehicle
+   * @param {Object} resp - information of a specific vehicle
+   */
   function vehicleInfo(resp) {
     id("vehicle-container").classList.remove("hidden");
     id("main-container").classList.add("hidden");
@@ -336,23 +346,39 @@
     id("info-container").appendChild(pic);
   }
 
+  /**
+   * retrieves all reviews for a vehicle
+   * @param {string} name - name of the vehicle
+   */
   async function vehicleReview(name) {
     try {
       let resp = await fetch("/reviews/" + name);
       await statusCheck(resp);
       resp = await resp.json();
-      displayReviews(resp);
+      id("reviews").innerHTML = "";
+      displayReviews(resp, false);
     } catch (err) {
 
     }
   }
 
-  function displayReviews(resp) {
-    id("reviews").innerHTML = "";
+  /**
+   * displays all reviews for a certain vehicle
+   * @param {Object} resp - all reviews for a vehicle
+   * @param {boolean} add - whether the review was just added
+   */
+  function displayReviews(resp, add) {
+    if (resp.length === 0) {
+      id("no-reviews").classList.remove("hidden");
+      id("reviews").style.height = "0px";
+    } else {
+      id("no-reviews").classList.add("hidden");
+      id("reviews").style.height = "400px";
+    }
     for (let i = 0; i < resp.length; i++) {
       let review = gen("section");
       review.classList.add("review-card");
-      let user = gen("p");
+      let user = gen("h3");
       user.textContent = resp[i]["user"];
       let rating = gen("p");
       rating.textContent = "Rating: " + resp[i]["rating"];
@@ -364,27 +390,51 @@
       review.appendChild(rating);
       review.appendChild(comment);
       review.appendChild(date);
-      id("reviews").appendChild(review);
+      if (add) {
+        id("reviews").prepend(review);
+      } else {
+        id("reviews").appendChild(review);
+      }
     }
   }
 
+  /**
+   * shows form where users can add a review to a vehicle
+   */
   function addReview() {
     id("add-review").classList.remove("hidden");
+    id("rate").selectedIndex = 0;
     qs("#add-review input").value = "";
   }
 
+  /**
+   * adds a review to a vehicle
+   */
   async function submitReview() {
     try {
-      let resp = await fetch("/reviews/new" + name);
+      let vehicle = qs("#info-container h1").textContent;
+      let username = document.cookie.split("=")[1];
+      let rating = id("rate").value;
+      let comment = qs("#add-review input").value;
+      let data = new FormData();
+      data.append("vehicle", vehicle);
+      data.append("user", username);
+      data.append("rating", rating);
+      data.append("comment", comment);
+      let resp = await fetch("/reviews/new", {method: "POST", body: data});
       await statusCheck(resp);
-
+      resp = await resp.json();
+      let arr = [];
+      arr.push(resp);
+      displayReviews(arr, true);
+      id("add-review").classList.add("hidden");
     } catch (err) {
 
     }
   }
 
   /**
-   * Set up how buttons on main page behave
+   * sets up how buttons on main page behave
    */
   function mainPageBehaviors() {
     qs("header > nav > div").addEventListener("click", home);
@@ -397,15 +447,21 @@
     document.getElementsByName("layout")[1].addEventListener("click", changeCardView);
   }
 
+  /**
+   * sets up how buttons on vehicle view behave
+   */
   function vehicleViewBehaviors() {
     qs("#rating-container > button").addEventListener("click", addReview);
     id("add-review").addEventListener("submit", async function(evt) {
-    evt.preventDefault();
-    await submitReview();
+      evt.preventDefault();
+      await submitReview();
     });
     qs("#action-container > button").addEventListener("click", mainPageView);
   }
 
+  /**
+   * displays the main page
+   */
   async function home() {
     try {
       await resetFilter();
@@ -415,13 +471,17 @@
     }
   }
 
+  /**
+   * displays the main page
+   */
   function mainPageView() {
     id("main-container").classList.remove("hidden");
     id("vehicle-container").classList.add("hidden");
+    id("history-page").classList.add("hidden");
   }
 
   /**
-   * TODO:
+   * reset vehicle filters to default values
    */
   async function resetFilter() {
     qs("input[name=type]").checked = true;
@@ -447,6 +507,9 @@
     });
   }
 
+  /**
+   * signs up a user
+   */
   async function signUp() {
     if (id("set-password").value === id("confirm-password").value) {
       qs("#sign-up-form > form > p").classList.add("hidden");
@@ -459,7 +522,6 @@
         await statusCheck(resp);
         resp = await resp.json();
         await userLogIn(resp["username"], resp["password"]);
-        /** add a profile page where can deposit; */
       } catch (err) {
 
       }
@@ -468,6 +530,9 @@
     }
   }
 
+  /**
+   * logs in a user
+   */
   async function logIn() {
     try {
       await userLogIn(id("login-user").value, id("login-password").value);
@@ -476,6 +541,9 @@
     }
   }
 
+  /**
+   * logs in a user
+   */
   async function userLogIn(username, password) {
     try {
       let data = new FormData();
@@ -489,6 +557,9 @@
     }
   }
 
+  /**
+   * turns profile button for guest user to my account for logged-in users
+   */
   function showAccount() {
     id("profile-btn").classList.add("hidden");
     id("account-btn").classList.remove("hidden");
@@ -496,34 +567,151 @@
     hideForm("log-in-form");
   }
 
+  /**
+   * add event listeners to my account buttons
+   */
   function accountFunctions() {
     id("account-btn").addEventListener("click", accountButtonBehavior);
-    id("deposit").addEventListener("click", deposit);
-    id("history").addEventListener("click", history);
-    id("log-out").addEventListener("click", logOut);
-
+    id("deposit").addEventListener("click", async function() {
+      await deposit();
+    });
+    id("confirm-deposit").addEventListener("click", async function(evt) {
+      evt.preventDefault();
+      await makeDeposit();
+    })
+    id("history").addEventListener("click", async function() {
+      await history();
+    });
+    id("log-out").addEventListener("click", async function() {
+      await logOut();
+    });
   }
 
+  /**
+   * shows account menu with different buttons for different actions
+   */
   function accountButtonBehavior() {
     let cart = id("cart").classList.contains("hidden");
-    if (cart) {
+    let deposit = id("deposit-form").classList.contains("hidden");
+    if (cart && deposit) {
       toggleForm("account-form");
     }
   }
 
-  function deposit() {
+  /**
+   * shows the deposit form where user's can make deposit
+   */
+  async function deposit() {
+    id("account-form").classList.add("hidden");
+    try {
+      let cart = id("cart").classList.contains("hidden");
+      if (cart && deposit) {
+        toggleForm("deposit-form");
+      }
+      await getMyBalance();
+    } catch (err) {
 
+    }
   }
 
-  function history() {
+  /**
+   * retrieves a logged-in user's balance
+   */
+  async function getMyBalance() {
+    try {
+      let username = document.cookie.split("=")[1];
+      let data = new FormData();
+      data.append("user", username);
+      let resp = await fetch("/balance", {method: "POST", body: data});
+      resp = await resp.text();
+      id("current-balance").textContent = "My Current Balance: $" + resp;
+    } catch (err) {
 
+    }
   }
 
-  function logOut() {
+  /**
+   * makes deposit for a logged-in user
+   */
+  async function makeDeposit() {
+    try {
+      let username = document.cookie.split("=")[1];
+      let amount = qs("#deposit-form form input").value;
+      let data = new FormData();
+      data.append("user", username);
+      data.append("amount", amount);
+      let resp = await fetch("/deposit", {method: "POST", body: data});
+      qs("#deposit-form form input").value = "";
+      id("deposit-form").classList.add("hidden");
+      resp = await resp.text();
+      await showMessage(resp);
+    } catch (err) {
+
+    }
+  }
+
+  /**
+   * retieves transaction history of a logged-in user
+   */
+  async function history() {
+    try {
+      let username = document.cookie.split("=")[1];
+      let data = new FormData();
+      data.append("user", username);
+      let resp = await fetch("/account/history", {method: "POST", body: data});
+      resp = await resp.json();
+      showHistory(resp);
+    } catch (err) {
+
+    }
+  }
+
+  /**
+   * shows the transaction history of a user
+   * @param {Object} resp - data for all transactions made by a user
+   */
+  function showHistory(resp) {
+    id("account-form").classList.add("hidden");
+    id("main-container").classList.add("hidden");
+    id("vehicle-container").classList.add("hidden");
+    id("history-page").classList.remove("hidden");
+    for (let i = 0; i < resp.length; i++) {
+      let entry = gen("section");
+      entry.classList.add("history-card");
+      let code = gen("p");
+      code.textContent = resp[i]["code"];
+      let vehicle = gen("p");
+      vehicle.textContent = resp[i]["vehicle"];
+      let date = gen("p");
+      date.textContent = (new Date(resp[i]["date"])).toLocaleString();
+      entry.appendChild(code);
+      entry.appendChild(vehicle);
+      entry.appendChild(date);
+      id("previous-purchases").appendChild(entry);
+    }
+  }
+
+  /**
+   * allows a logged-in user to log out
+   */
+  async function logOut() {
     document.cookie = "username=;expires=Thu, 01 Jan 1970 00:00:00 GMT";
     id("account-form").classList.add("hidden");
     id("account-btn").classList.add("hidden");
     id("profile-btn").classList.remove("hidden");
+    try {
+      await home();
+    } catch (error) {
+
+    }
+  }
+
+  /**
+   * displays a helpful message when certain actions are performed
+   * @param {string} msg - message to be displayed
+   */
+  async function showMessage(msg) {
+
   }
 
   /** ------------------------------ Helper Functions  ------------------------------ */

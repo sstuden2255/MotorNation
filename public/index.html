@@ -109,7 +109,9 @@
         </div>
         <h2>Deposit</h2>
         <form>
-
+          <h3 id="current-balance"></h3>
+          <input type="number" min="0" max="10000000" step="1" placeholder="Enter Deposit $">
+          <button id="confirm-deposit">Make Deposit</button>
 
         </form>
       </section>
@@ -193,12 +195,13 @@
         </section>
         <section id="rating-container">
           <h2>Customer Reviews</h2>
+          <p id="no-reviews">No Reviews Yet On This Vehicle</p>
           <button>Add a Review!</button>
           <form id="add-review" class="hidden">
             <span>x</span>
             <label for="rate">Your Rating (out of 5):</label>
             <select name="rate" id="rate">
-              <option value="5">5</option>
+              <option value="5" selected>5</option>
               <option value="4">4</option>
               <option value="3">3</option>
               <option value="2">2</option>
@@ -211,6 +214,20 @@
           </section>
         </section>
       </section>
+      <section id="history-page" class="hidden">
+        <h2>Transaction History</h2>
+        <section class="history-card">
+          <p>Transaction Code</p>
+          <p>Vehicle</p>
+          <p>Transaction Date</p>
+        </section>
+        <section id="previous-purchases">
+        </section>
+      </section>
+      <section id="message-page" class="hidden">
+
+      </section>
+
     </main>
     <footer>
       <p>&copy; 2023 Simon Studen and Vincent Kao</p>
