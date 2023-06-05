@@ -37,11 +37,7 @@ app.get("/vehicles", async function(req, res) {
       let query = "SELECT name FROM vehicles WHERE price <= ?";
       let db = await getDBConnection();
       let results;
-      if (maxPrice === "none") {
-        maxPrice = "binary-double-infinity"; // infinity for SQL
-      } else {
-        maxPrice = parseFloat(maxPrice);
-      }
+      maxPrice = setMaxPrice(maxPrice);
       if (type === "all") {
         query += " ORDER BY name;";
         results = await db.all(query, maxPrice);
@@ -56,10 +52,12 @@ app.get("/vehicles", async function(req, res) {
       await db.close();
       res.type("text").send(cars);
     } else {
-      res.type("text").status(400).send("Missing a Filter Parameter");
+      res.type("text");
+      res.status(400).send("Missing a Filter Parameter");
     }
   } catch (err) {
-    res.type("text").status(500).send("Something on the server went wrong!");
+    res.type("text");
+    res.status(500).send("Something on the server went wrong!");
   }
 });
 
@@ -72,7 +70,8 @@ app.get("/vehicles/:vehicle_name", async function(req, res) {
     let results = await db.get(query, name);
     res.type("json").send(results);
   } catch (err) {
-    res.type("text").status(500).send("Something on the server went wrong!");
+    res.type("text");
+    res.status(500).send("Something on the server went wrong!");
   }
 });
 
@@ -80,13 +79,15 @@ app.get("/vehicles/:vehicle_name", async function(req, res) {
 app.get("/reviews/:vehicle_name", async function(req, res) {
   const name = req.params["vehicle_name"];
   try {
-    let query = "SELECT user, rating, comment, date FROM reviews WHERE vehicle = ? ORDER BY date DESC";
+    let query;
+    query = "SELECT user, rating, comment, date FROM reviews WHERE vehicle = ? ORDER BY date DESC";
     let db = await getDBConnection();
     let results = await db.all(query, name);
     await db.close();
     res.type("json").send(results);
   } catch (err) {
-    res.type("text").status(500).send("Something on the server went wrong!");
+    res.type("text");
+    res.status(500).send("Something on the server went wrong!");
   }
 });
 
@@ -97,51 +98,48 @@ app.post("/reviews/new", async function(req, res) {
   const rating = parseInt(req.body["rating"]);
   const comment = req.body["comment"];
   try {
-    if (name && user && rating && comment) {
+    if (name && user && rating && comment && rating > 1 && rating < 5) {
       let query = "SELECT user FROM transactions WHERE user = ? AND vehicle = ?;";
       let db = await getDBConnection();
       let results = await db.get(query, [user, name]);
+      await db.close();
       if (results) {
-        query = "INSERT INTO reviews (vehicle, user, rating, comment) VALUES (?, ?, ?, ?);";
-        results = await db.run(query, [name, user, rating, comment]);
-        query = "SELECT user, rating, comment, date FROM reviews WHERE id = ?"
-        results = await db.get(query, results["lastID"]);
-        await db.close();
+        results = await newReview(name, user, rating, comment);
         await updateVehicleRating(name);
         res.type("json").send(results);
       } else {
-        await db.close();
-        res.type("text").status(400).send("You have not purchased this vehicle.");
+        res.type("text")
+        res.status(400).send("You have not purchased this vehicle.");
       }
     } else {
-      res.type("text").status(400).send("Not enough information provided to leave review.");
+      res.type("text")
+      res.status(400).send("Not enough / incorrect information provided.");
     }
   } catch (err) {
-    res.type("text").status(500).send("Something on the server went wrong!");
+    res.type("text");
+    res.status(500).send("Something on the server went wrong!");
   }
 });
 
 // creates a new user
 app.post("/account/create", async function(req, res) {
-  const username = req.body["username"], email = req.body["email"], password = req.body["password"];
+  const username = req.body["username"];
+  const email = req.body["email"];
+  const password = req.body["password"];
   try {
     if (username && email && password) {
       let db = await getDBConnection();
       let results = await db.get("SELECT * FROM users WHERE email = ?;", email);
+      await db.close();
       if (results) {
-        await db.close();
         res.type("text").status(400).send("An account with that email address already exists.");
       } else {
         let userNameExist = await checkUserName(username);
         if (userNameExist) {
-          await db.close();
           res.type("text").status(400).send("Username already taken");
         } else {
-          let query = "INSERT INTO users (username, email, password, balance) VALUES (?, ?, ?, ?);";
-          results = await db.run(query, [username, email, password, 0]);
-          query = "SELECT username, password FROM users WHERE id = ?;";
-          results = await db.get(query, results["lastID"]);
-          await db.close();
+          results = await newUser(username, email, password);
+          console.log(results);
           res.type("json").send(results);
         }
       }
@@ -149,7 +147,8 @@ app.post("/account/create", async function(req, res) {
       res.type("text").status(400).send("A field is missing!");
     }
   } catch (err) {
-    res.type("text").status(500).send("Something on the server went wrong!");
+    res.type("text");
+    res.status(500).send("Something on the server went wrong!");
   }
 });
 
@@ -157,6 +156,7 @@ app.post("/account/create", async function(req, res) {
 app.post("/login", async function(req, res) {
   const username = req.body["username"];
   const password = req.body["password"];
+  res.type("text");
   try {
     if (username && password) {
       let query = "SELECT * FROM users WHERE username = ? AND password = ?;";
@@ -165,16 +165,16 @@ app.post("/login", async function(req, res) {
       await db.close();
       if (results) {
         const expirationDate = "Fri, 31 Dec 9999 23:59:59 GMT";
-        res.cookie("username", username , { expires: new Date(expirationDate) });
-        res.type("text").send("Logged In Seccussfully");
+        res.cookie("username", username, {expires: new Date(expirationDate)});
+        res.send("Logged In Seccussfully");
       } else {
-        res.type("text").status(400).send("The username/password is incorrect");
+        res.status(400).send("The username/password is incorrect");
       }
     } else {
-      res.type("text").status(400).send("A field is missing!");
+      res.status(400).send("A field is missing!");
     }
   } catch (err) {
-    res.type("text").status(500).send("Something on the server went wrong!");
+    res.status(500).send("Something on the server went wrong!");
   }
 });
 
@@ -234,9 +234,11 @@ app.post("/account/history", async function(req, res) {
       await db.close();
       res.type("json").send(results);
     } else {
-      res.type("text").status(400).send("Not Logged In");
+      res.type("text");
+      res.status(400).send("Not Logged In");
     }
   } catch (err) {
+    res.type("text");
     res.status(500).send("Something on the server went wrong!");
   }
 });
@@ -261,12 +263,69 @@ app.post("/purchase", async function(req, res) {
         res.status(400).send("You do not have enough money in your account to make the purchase!");
       }
     } else {
-    res.status(400).send("Not enough information to make purchase!");
+      res.status(400).send("Not enough information to make purchase!");
     }
   } catch (err) {
     res.status(500).send("Something on the server went wrong!");
   }
 });
+
+/**
+ * sets maximum price for when filtering vehicles
+ * @param {String} maxPrice - username of account
+ * @returns {int} - maximum price
+ */
+async function setMaxPrice(maxPrice) {
+  if (maxPrice === "none") {
+    return "binary-double-infinity"; // infinity for SQL
+  } else {
+    return parseInt(maxPrice);
+  }
+}
+
+/**
+ * updates new user into database
+ * @param {String} username - username of account
+ * @param {String} email - email of account
+ * @param {String} password - password of account
+ * @returns {Object} - information of the new user
+ */
+async function newUser(username, email, password) {
+  try {
+    let query = "INSERT INTO users (username, email, password, balance) VALUES (?, ?, ?, ?);";
+    let db = await getDBConnection();
+    let results = await db.run(query, [username, email, password, 0]);
+    console.log(results);
+    query = "SELECT username, password FROM users WHERE id = ?;";
+    results = await db.get(query, results["lastID"]);
+    await db.close();
+    console.log(results);
+    return results;
+  } catch (err) {
+
+  }
+}
+
+/**
+ * updates average rating of a vehicle after a review has been made
+ * @param {string} name - name of vehicle
+ * @param {string} user - username
+ * @param {int} rating - rating of vehicle
+ * @param {string} comment - comment of review
+ */
+async function newReview(name, user, rating, comment) {
+  try {
+    let query = "INSERT INTO reviews (vehicle, user, rating, comment) VALUES (?, ?, ?, ?);";
+    let db = await getDBConnection();
+    let results = await db.run(query, [name, user, rating, comment]);
+    query = "SELECT user, rating, comment, date FROM reviews WHERE id = ?";
+    results = await db.get(query, results["lastID"]);
+    await db.close();
+    return results;
+  } catch (err) {
+
+  }
+}
 
 /**
  * updates average rating of a vehicle after a review has been made
@@ -278,7 +337,8 @@ async function updateVehicleRating(vehicle) {
     let db = await getDBConnection();
     let results = await db.get(query, vehicle);
     query = "UPDATE vehicles SET rating = ? WHERE name = ?";
-    results = await db.run(query, [results["avg"], vehicle]);
+    await db.run(query, [results["avg"], vehicle]);
+    await db.close()
   } catch (err) {
 
   }
