@@ -38,6 +38,7 @@ app.get("/vehicles", async function(req, res) {
       let db = await getDBConnection();
       let results;
       maxPrice = setMaxPrice(maxPrice);
+      console.log(maxPrice);
       if (type === "all") {
         query += " ORDER BY name;";
         results = await db.all(query, maxPrice);
@@ -60,6 +61,32 @@ app.get("/vehicles", async function(req, res) {
     res.status(500).send("Something on the server went wrong!");
   }
 });
+
+// search for vehicles matching the search term
+app.get("/search/vehicles", async function(req, res) {
+  const search = req.query["search"];
+  try {
+    if (search) {
+      let query = "SELECT name FROM vehicles WHERE ";
+      query += "LOWER(name) LIKE ? OR  LOWER(type) LIKE ?;";
+      let db = await getDBConnection();
+      let results = await db.all(query, ["\%" + search + "\%", "\%" + search + "\%"]);
+      let cars = "";
+      for (let i = 0; i < results.length; i++) {
+        cars += results[i]["name"] + "\n";
+      }
+      await db.close();
+      res.type("text").send(cars);
+    } else {
+      res.type("text");
+      res.status(400).send("Please Provide a Search Term.");
+    }
+  } catch (err) {
+    res.type("text");
+    console.log(err);
+    res.status(500).send("Something on the server went wrong!");
+  }
+})
 
 // gets information of a specific vehicle
 app.get("/vehicles/:vehicle_name", async function(req, res) {
@@ -275,7 +302,7 @@ app.post("/purchase", async function(req, res) {
  * @param {String} maxPrice - username of account
  * @returns {int} - maximum price
  */
-async function setMaxPrice(maxPrice) {
+function setMaxPrice(maxPrice) {
   if (maxPrice === "none") {
     return "binary-double-infinity"; // infinity for SQL
   } else {
@@ -302,7 +329,7 @@ async function newUser(username, email, password) {
     console.log(results);
     return results;
   } catch (err) {
-
+    return err;
   }
 }
 
@@ -323,7 +350,7 @@ async function newReview(name, user, rating, comment) {
     await db.close();
     return results;
   } catch (err) {
-
+    return err;
   }
 }
 
@@ -340,7 +367,7 @@ async function updateVehicleRating(vehicle) {
     await db.run(query, [results["avg"], vehicle]);
     await db.close()
   } catch (err) {
-
+    return err;
   }
 }
 
@@ -369,7 +396,7 @@ async function makePurchase(user, purchase) {
     console.log("code = " + code);
     return code;
   } catch (err) {
-
+    return err;
   }
 }
 
@@ -385,7 +412,7 @@ async function updateVehicle(vehicle) {
     await db.close();
     console.log("vehicles updated");
   } catch (err) {
-
+    return err;
   }
 }
 
@@ -402,7 +429,7 @@ async function updateBalance(user, vehicle) {
     await db.close();
     console.log("balance updated");
   } catch (err) {
-
+    return err;
   }
 }
 
@@ -420,7 +447,7 @@ async function updateHistory(user, vehicle, code) {
     await db.close();
     console.log("history updated");
   } catch (err) {
-
+    return err;
   }
 }
 
@@ -445,7 +472,7 @@ async function checkBudget(username, purchase) {
     await db.close();
     return results;
   } catch (err) {
-    return false;
+    return err;
   }
 }
 
@@ -473,7 +500,7 @@ async function checkStock(purchase) {
     await db.close();
     return true;
   } catch (err) {
-    return false;
+    return err;
   }
 }
 
@@ -490,7 +517,7 @@ async function checkUserName(username) {
     await db.close();
     return results;
   } catch (err) {
-    return false;
+    return err;
   }
 }
 
