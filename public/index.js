@@ -24,6 +24,7 @@
    */
   async function init() {
     mainPageBehaviors();
+    searchButtonBehavior();
     toggleLoginForm();
     toggleCart();
     toggleCheckoutScreen();
@@ -49,6 +50,34 @@
       await getVehicles();
     } catch (err) {
       showMessage(err["message"]);
+    }
+  }
+
+  function searchButtonBehavior() {
+    qs(".search-bar-container button").addEventListener("click", async function() {
+      await makeSearch();
+    });
+    qs(".search-bar-container input").addEventListener("input", searchButtonDisable);
+  }
+
+  function searchButtonDisable() {
+    let button = qs(".search-bar-container button");
+    if (this.value.trim() === "") {
+      button.disabled = true;
+    } else {
+      button.disabled = false;
+    }
+  }
+
+  async function makeSearch() {
+    try {
+      let term = qs(".search-bar-container input").value.trim();
+      let resp = await fetch("/search/vehicles?search=" + term);
+      await statusCheck(resp);
+      resp = await resp.text();
+      await displayVehicles(resp);
+    } catch (err) {
+
     }
   }
 
@@ -99,26 +128,26 @@
       hideCurrentView();
       cartPurchase = true;
       goToCheckout(Object.values(cartObj));
-    })
+    });
   }
 
   /**
    * helper function that hides the current view when the checkout button
    * is clicked
    */
- function hideCurrentView() {
-   let currentView = "";
-   if (!id("main-container").classList.contains("hidden")) {
-     currentView = "main-container";
-   } else {
-     currentView = "vehicle-container";
-   }
-   id(currentView).classList.add("hidden");
-   id("cart").classList.add("hidden");
-   id("check-out-container").classList.remove("hidden");
- }
+  function hideCurrentView() {
+    let currentView = "";
+    if (!id("main-container").classList.contains("hidden")) {
+      currentView = "main-container";
+    } else {
+      currentView = "vehicle-container";
+    }
+    id(currentView).classList.add("hidden");
+    id("cart").classList.add("hidden");
+    id("check-out-container").classList.remove("hidden");
+  }
 
- /**
+  /**
    * go to checkout view where users can confirm purchase
    * @param {Object} vehicles - all vehicles in checkout stage
    */
@@ -130,6 +159,10 @@
     }
   }
 
+  /**
+   * adds the selected item to the cart
+   * @param {Object} info - information of a vehicle to be checked out
+   */
   function addVehicleToCheckout(info) {
     console.log(info);
     let entry = gen("section");
@@ -235,9 +268,12 @@
   function confirmPurchase() {
     id("confirm-purchase-btn").addEventListener("click", async () => {
       await makePurchase();
-    })
+    });
   }
 
+  /**
+   * makes purchase to backend
+   */
   async function makePurchase() {
     try {
       let username = document.cookie.split("=")[1];
@@ -279,7 +315,7 @@
   /**
    * updates the module global variable for the cart from local storage
    */
-  function updateCartObjFromLocalStorage(){
+  function updateCartObjFromLocalStorage() {
     if (window.localStorage.getItem("cart")) {
       cartObj = JSON.parse(window.localStorage.getItem("cart"));
     }
@@ -303,10 +339,14 @@
     });
   }
 
+  /**
+   * buy a single vehicle on vehicle view container
+   */
   async function buyNow() {
     try {
       singlePurchase = {};
-      let vehicleID = id("selected-name").textContent.split(" ").join("-").toLowerCase();
+      let vehicleID = id("selected-name").textContent.split(" ").join("-");
+      vehicleID = vehicleID.toLowerCase();
       singlePurchase[vehicleID] = createLocalStorageObject();
       console.log(singlePurchase);
       console.log(cartObj);
@@ -320,7 +360,7 @@
    * adds the selected item to the cart
    */
   function addItemToCart() {
-    let vehicleObj= createLocalStorageObject();
+    let vehicleObj = createLocalStorageObject();
     let vehicleImg = vehicleObj["img-src"];
     let vehicleImgAlt = vehicleObj["img-alt"];
     let vehicleName = vehicleObj["name"];
@@ -601,12 +641,23 @@
    */
   async function displayVehicles(names) {
     try {
+      console.log("n" + names);
+      id("main-container").classList.remove("hidden");
+      id("vehicle-container").classList.add("hidden");
+      id("check-out-container").classList.add("hidden");
+      id("history-page").classList.add("hidden");
+      id("message-page").classList.add("hidden");
       id("vehicles-view").innerHTML = "";
-      const vehicles = names.trim().split("\n");
-      for (let i = 0; i < vehicles.length; i++) {
-        let resp = await fetch("/vehicles/" + vehicles[i]);
-        resp = await resp.json();
-        makeVehicleCard(resp);
+      if (names !== "") {
+        const vehicles = names.trim().split("\n");
+        console.log(vehicles.length);
+        for (let i = 0; i < vehicles.length; i++) {
+          let resp = await fetch("/vehicles/" + vehicles[i]);
+          resp = await resp.json();
+          makeVehicleCard(resp);
+        }
+      } else {
+        showMessage("No Vehicles Matches Your Search/Filter!");
       }
     } catch (err) {
       showMessage(err["message"]);
