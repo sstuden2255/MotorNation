@@ -156,10 +156,10 @@ app.post("/account/create", async function(req, res) {
       let results = await db.get("SELECT * FROM users WHERE email = ?;", email);
       await db.close();
       if (results) {
-        res.type("text").status(400).send("An account with that email address already exists.");
+        res.type("text");
+        res.status(400).send("An account with that email address already exists.");
       } else {
-        let userNameExist = await checkUserName(username);
-        if (userNameExist) {
+        if (await checkUserName(username)) {
           res.type("text");
           res.status(400).send("Username already taken");
         } else {
