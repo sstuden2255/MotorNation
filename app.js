@@ -32,13 +32,13 @@ app.use(cookieParser());
 app.get("/vehicles", async function(req, res) {
   let maxPrice = req.query["maxPrice"];
   let type = req.query["type"];
+  res.type("text");
   try {
     if (maxPrice && type) {
       let query = "SELECT name FROM vehicles WHERE price <= ?";
       let db = await getDBConnection();
       let results;
       maxPrice = setMaxPrice(maxPrice);
-      console.log(maxPrice);
       if (type === "all") {
         query += " ORDER BY name;";
         results = await db.all(query, maxPrice);
@@ -51,13 +51,11 @@ app.get("/vehicles", async function(req, res) {
         cars += results[i]["name"] + "\n";
       }
       await db.close();
-      res.type("text").send(cars);
+      res.send(cars);
     } else {
-      res.type("text");
       res.status(400).send("Missing a Filter Parameter");
     }
   } catch (err) {
-    res.type("text");
     res.status(500).send("Something on the server went wrong!");
   }
 });
@@ -70,7 +68,7 @@ app.get("/search/vehicles", async function(req, res) {
       let query = "SELECT name FROM vehicles WHERE ";
       query += "LOWER(name) LIKE ? OR  LOWER(type) LIKE ?;";
       let db = await getDBConnection();
-      let results = await db.all(query, ["\%" + search + "\%", "\%" + search + "\%"]);
+      let results = await db.all(query, ["%" + search + "%", "%" + search + "%"]);
       let cars = "";
       for (let i = 0; i < results.length; i++) {
         cars += results[i]["name"] + "\n";
@@ -83,10 +81,9 @@ app.get("/search/vehicles", async function(req, res) {
     }
   } catch (err) {
     res.type("text");
-    console.log(err);
     res.status(500).send("Something on the server went wrong!");
   }
-})
+});
 
 // gets information of a specific vehicle
 app.get("/vehicles/:vehicle_name", async function(req, res) {
@@ -135,11 +132,11 @@ app.post("/reviews/new", async function(req, res) {
         await updateVehicleRating(name);
         res.type("json").send(results);
       } else {
-        res.type("text")
+        res.type("text");
         res.status(400).send("You have not purchased this vehicle.");
       }
     } else {
-      res.type("text")
+      res.type("text");
       res.status(400).send("Not enough / incorrect information provided.");
     }
   } catch (err) {
@@ -163,15 +160,16 @@ app.post("/account/create", async function(req, res) {
       } else {
         let userNameExist = await checkUserName(username);
         if (userNameExist) {
-          res.type("text").status(400).send("Username already taken");
+          res.type("text");
+          res.status(400).send("Username already taken");
         } else {
           results = await newUser(username, email, password);
-          console.log(results);
           res.type("json").send(results);
         }
       }
     } else {
-      res.type("text").status(400).send("A field is missing!");
+      res.type("text");
+      res.status(400).send("A field is missing!");
     }
   } catch (err) {
     res.type("text");
@@ -299,7 +297,7 @@ app.post("/purchase", async function(req, res) {
 
 /**
  * sets maximum price for when filtering vehicles
- * @param {String} maxPrice - username of account
+ * @param {String} maxPrice - uinput for maximum price
  * @returns {int} - maximum price
  */
 function setMaxPrice(maxPrice) {
@@ -322,11 +320,9 @@ async function newUser(username, email, password) {
     let query = "INSERT INTO users (username, email, password, balance) VALUES (?, ?, ?, ?);";
     let db = await getDBConnection();
     let results = await db.run(query, [username, email, password, 0]);
-    console.log(results);
     query = "SELECT username, password FROM users WHERE id = ?;";
     results = await db.get(query, results["lastID"]);
     await db.close();
-    console.log(results);
     return results;
   } catch (err) {
     return err;
@@ -365,7 +361,7 @@ async function updateVehicleRating(vehicle) {
     let results = await db.get(query, vehicle);
     query = "UPDATE vehicles SET rating = ? WHERE name = ?";
     await db.run(query, [results["avg"], vehicle]);
-    await db.close()
+    await db.close();
   } catch (err) {
     return err;
   }
@@ -393,7 +389,6 @@ async function makePurchase(user, purchase) {
       await updateBalance(user, purchase[i]);
       await updateHistory(user, purchase[i], code);
     }
-    console.log("code = " + code);
     return code;
   } catch (err) {
     return err;
@@ -410,7 +405,6 @@ async function updateVehicle(vehicle) {
     let db = await getDBConnection();
     await db.run(query, [vehicle["count"], vehicle["name"]]);
     await db.close();
-    console.log("vehicles updated");
   } catch (err) {
     return err;
   }
@@ -427,7 +421,6 @@ async function updateBalance(user, vehicle) {
     let db = await getDBConnection();
     await db.run(query, [vehicle["price"] * vehicle["count"], user]);
     await db.close();
-    console.log("balance updated");
   } catch (err) {
     return err;
   }
@@ -445,7 +438,6 @@ async function updateHistory(user, vehicle, code) {
     let db = await getDBConnection();
     await db.run(query, [user, vehicle["name"], code]);
     await db.close();
-    console.log("history updated");
   } catch (err) {
     return err;
   }
@@ -463,9 +455,7 @@ async function checkBudget(username, purchase) {
     purchase = Object.values(JSON.parse(purchase));
     for (let i = 0; i < purchase.length; i++) {
       cost += purchase[i]["price"] * purchase[i]["count"];
-      console.log(cost);
     }
-    console.log(cost);
     let query = "SELECT username FROM users WHERE username = ? AND balance >= ?;";
     let db = await getDBConnection();
     let results = await db.get(query, [username, cost]);
@@ -488,10 +478,8 @@ async function checkStock(purchase) {
     for (let i = 0; i < purchase.length; i++) {
       let name = purchase[i]["name"];
       let count = purchase[i]["count"];
-      console.log(name + count);
       let query = "SELECT name FROM vehicles WHERE name = ? AND \"in-stock\" >= ?;";
       let results = await db.get(query, [name, count]);
-      console.log(results);
       if (!results) {
         await db.close();
         return false;

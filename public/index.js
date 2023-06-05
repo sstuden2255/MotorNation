@@ -14,6 +14,7 @@
   let cartObj = {};
   let cartPurchase = false;
   let singlePurchase = {};
+
   /**
    * Add a function that will be called when the window is loaded.
    */
@@ -24,7 +25,7 @@
    */
   async function init() {
     mainPageBehaviors();
-    searchButtonBehavior();
+    searchBarBehavior();
     toggleLoginForm();
     toggleCart();
     toggleCheckoutScreen();
@@ -52,13 +53,19 @@
     }
   }
 
-  function searchButtonBehavior() {
+  /**
+   * initializes search bar behavior
+   */
+  function searchBarBehavior() {
     qs(".search-bar-container button").addEventListener("click", async function() {
       await makeSearch();
     });
     qs(".search-bar-container input").addEventListener("input", searchButtonDisable);
   }
 
+  /**
+   * disables search button if input is blank
+   */
   function searchButtonDisable() {
     let button = qs(".search-bar-container button");
     if (this.value.trim() === "") {
@@ -68,6 +75,9 @@
     }
   }
 
+  /**
+   * searches through database for vehicles using search bar
+   */
   async function makeSearch() {
     try {
       let term = qs(".search-bar-container input").value.trim();
@@ -76,7 +86,7 @@
       resp = await resp.text();
       await displayVehicles(resp);
     } catch (err) {
-
+      showMessage(err["message"]);
     }
   }
 
@@ -351,7 +361,7 @@
    * @param {Object} vehicle - vehicle that is in the cart
    */
   function calculateCartTotal(vehicle) {
-    for(let i = 0; i < vehicle.count; i++) {
+    for (let i = 0; i < vehicle.count; i++) {
       incrementCartItemCount(vehicle.id);
       incrementCartTotal(vehicle.id, vehicle.price);
       if (i > 0) {
@@ -678,7 +688,6 @@
    */
   async function displayVehicles(names) {
     try {
-      console.log("n" + names);
       id("main-container").classList.remove("hidden");
       id("vehicle-container").classList.add("hidden");
       id("check-out-container").classList.add("hidden");
@@ -687,7 +696,6 @@
       id("vehicles-view").innerHTML = "";
       if (names !== "") {
         const vehicles = names.trim().split("\n");
-        console.log(vehicles.length);
         for (let i = 0; i < vehicles.length; i++) {
           let resp = await fetch("/vehicles/" + vehicles[i]);
           resp = await resp.json();
