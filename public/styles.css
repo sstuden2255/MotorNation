@@ -132,7 +132,7 @@ header li > a {
 
 /* main styles */
 /* ------------------------------------------------------------------------- */
-#main-container {
+[id="main-container"] {
   display: flex;
   flex-wrap: wrap;
   align-items: flex-start;
@@ -183,14 +183,14 @@ header li > a {
   color: white;
 }
 
-#type-filter, #price-filter {
+[id="#type-filter"], [id="price-filter"] {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   margin-bottom: 50px;
 }
 
-#vehicles-view {
+[id="vehicles-view"] {
   display: flex;
   background-color: #d4d4d4;
   margin-bottom: 20px;
@@ -482,7 +482,7 @@ main a:link, main a:visited, main a:hover, main a:active {
   width: 30%;
 }
 
-#vehicle-container, #check-out-container {
+[id="vehicle-container"], [id="check-out-container"] {
   background-color: #d4d4d4;
   text-align: left;
   padding: 40px;
@@ -512,7 +512,7 @@ main a:link, main a:visited, main a:hover, main a:active {
 /* review styles */
 /* ------------------------------------------------------------------------- */
 
-#add-review {
+[id="add-review"] {
   background-color: #a7a7a7;
   display: flex;
   flex-direction: column;
@@ -574,7 +574,7 @@ main a:link, main a:visited, main a:hover, main a:active {
 /* history styles */
 /* ------------------------------------------------------------------------- */
 
-#history-page {
+[id="history-page"] {
   background-color: #d4d4d4;
   height: 600px;
   width: 80%;
@@ -639,13 +639,14 @@ main a:link, main a:visited, main a:hover, main a:active {
   width: 250px;
 }
 
-#message-page {
+[id="message-page"] {
   margin-top: 10%;
   font-size: 20pt;
+  display: block;
 }
 
 .hidden {
-  display: none !important;
+  display: none;
 }
 
 button:hover {
