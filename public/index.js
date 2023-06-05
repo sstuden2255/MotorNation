@@ -191,7 +191,7 @@
 
     qs("#deposit-form .close").addEventListener("click", () => {
       toggleForm("deposit-form");
-    })
+    });
 
     id("main-container").addEventListener("click", () => {
       hideForm("log-in-form");
@@ -401,7 +401,8 @@
    */
   function createLocalStorageObject() {
     let vehicleName = id("selected-name").textContent;
-    let vehicleID = vehicleName.split(" ").join("-").toLowerCase();
+    let vehicleID = vehicleName.split(" ").join("-");
+    vehicleID = vehicleID.toLowerCase();
     let vehicleImg = "img/vehicles/" + vehicleID + ".png";
     let vehicleImgAlt = id("selected-img").alt;
     let price = id("selected-price").textContent;
@@ -565,36 +566,6 @@
     }
   }
 
-  function closeForms() {
-    qs("#log-in-form .close").addEventListener('click', () => {
-      toggleForm("log-in-form");
-    });
-
-    qs("#sign-up-form .close").addEventListener('click', () => {
-      toggleForm("sign-up-form");
-    });
-
-    qs("#cart .close").addEventListener('click', () => {
-      toggleForm("cart");
-    });
-
-    qs("#account-form .close").addEventListener('click', () => {
-      toggleForm("account-form");
-    });
-
-    id("main-container").addEventListener("click", () => {
-      hideForm("log-in-form");
-      hideForm("sign-up-form");
-      hideForm("account-form");
-    });
-
-    qs(".search-bar-container").addEventListener("click", () => {
-      hideForm("log-in-form");
-      hideForm("sign-up-form");
-      hideForm("account-form");
-    });
-  }
-
   /**
    * helper function that decrements the total cost of items in the cart when
    * and item is added
@@ -609,7 +580,7 @@
     }
   }
 
-   /**
+  /**
    * helper function that decrements the count for a particular vehicle card
    * in the cart
    * @param {string} vehicleID - id of the vehicle card we want to increment
@@ -621,7 +592,7 @@
       currentCount.textContent = parseInt(currentCount.textContent) - 1;
       cartObj[vehicleID]["count"] -= 1;
     } else {
-      id("cart-card-container").removeChild(id(vehicleID))
+      id("cart-card-container").removeChild(id(vehicleID));
       delete cartObj[vehicleID];
     }
     window.localStorage.setItem("cart", JSON.stringify(cartObj));
@@ -630,6 +601,7 @@
   /**
    * helper function that checks if there is enough vehicles in stock
    * to add to the cart
+   * @param {string} vehicleID - id of vehicle card
    * @returns {boolean} - true if there are enough vehicles in stock to add to cart,
    * fals otherwise
    */
@@ -640,6 +612,9 @@
     (parseInt(currentCount.textContent) < parseInt(selectedStock.textContent));
   }
 
+  /**
+   * toggle between card and compact view when displaying vehicles on main page
+   */
   function changeCardView() {
     let cards = qsa(".vehicle-card");
     for (let i = 0; i < cards.length; i++) {
@@ -658,7 +633,7 @@
     try {
       const type = qs("input[name=type]:checked").value;
       const price = qs("input[name=price]:checked").value;
-      let resp = await fetch("/vehicles?type=" + type +"&maxPrice=" + price);
+      let resp = await fetch("/vehicles?type=" + type + "&maxPrice=" + price);
       await statusCheck(resp);
       resp = await resp.text();
       await displayVehicles(resp);
@@ -669,12 +644,12 @@
 
   /**
    * displays vehicles on main page
-   * @param {string} resp - name of all vehicles to be displayed
+   * @param {string} names - name of all vehicles to be displayed
    */
-  async function displayVehicles(resp) {
+  async function displayVehicles(names) {
     try {
       id("vehicles-view").innerHTML = "";
-      const vehicles = resp.trim().split("\n");
+      const vehicles = names.trim().split("\n");
       for (let i = 0; i < vehicles.length; i++) {
         let resp = await fetch("/vehicles/" + vehicles[i]);
         resp = await resp.json();
@@ -707,7 +682,7 @@
     card.appendChild(price);
     card.addEventListener("click", function() {
       vehiclePage(resp);
-    })
+    });
     id("vehicles-view").appendChild(card);
   }
 
@@ -747,7 +722,7 @@
   /**
    * helper function that generates the html elements for displaying a vehicles
    * info on the page
-   * @param {JSON} resp
+   * @param {JSON} resp - Data of a vehicle
    * @returns {HTMLElement} - div containing the info for a particular vehicle
    */
   function genVehicleInfoElements(resp) {
@@ -783,7 +758,7 @@
   /**
    * helper function that generates the html elements for displaying a vehicles
    * rating on the page
-   * @param {JSON} resp
+   * @param {JSON} resp - data of a vehicle
    * @returns {HTMLElement} - paragraph containing the vehicle rating if present,
    * or "No Ratings Yet!" if not
    */
@@ -793,7 +768,7 @@
     if (resp["rating"] !== null) {
       rating.textContent = "Rating: " + (Math.round(resp["rating"] * 100) / 100) + "/5";
     } else {
-      rating.textContent = "No Ratings Yet!"
+      rating.textContent = "No Ratings Yet!";
     }
     return rating;
   }
@@ -882,7 +857,6 @@
       id("add-review").classList.add("hidden");
       showMessage("Review Added Successfully!");
     } catch (err) {
-      console.log(err);
       showMessage(err["message"]);
     }
   }
@@ -999,6 +973,8 @@
 
   /**
    * logs in a user
+   * @param {string} username - provided username
+   * @param {string} password - provided password
    */
   async function userLogIn(username, password) {
     try {
@@ -1034,7 +1010,7 @@
     id("confirm-deposit").addEventListener("click", async function(evt) {
       evt.preventDefault();
       await makeDeposit();
-    })
+    });
     id("history").addEventListener("click", async function() {
       await history();
     });
@@ -1048,8 +1024,8 @@
    */
   function accountButtonBehavior() {
     let cart = id("cart").classList.contains("hidden");
-    let deposit = id("deposit-form").classList.contains("hidden");
-    if (cart && deposit) {
+    let depositForm = id("deposit-form").classList.contains("hidden");
+    if (cart && depositForm) {
       toggleForm("account-form");
     }
   }
@@ -1060,7 +1036,7 @@
   function messageButtonBehavior() {
     qs("#message-page button").addEventListener("click", async function() {
       await home();
-    })
+    });
   }
 
   /**
@@ -1176,7 +1152,6 @@
    * @param {string} msg - message to be displayed
    */
   function showMessage(msg) {
-    console.log(msg);
     qs("#message-page p").textContent = msg;
     id("message-page").classList.remove("hidden");
     id("main-container").classList.add("hidden");
