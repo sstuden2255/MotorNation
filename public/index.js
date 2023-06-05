@@ -39,6 +39,7 @@
     accountFunctions();
     confirmPurchase();
     messageButtonBehavior();
+    renderCartItemsFromLocalStorage()
 
     console.log(document.cookie);
     if (document.cookie) {
@@ -286,6 +287,49 @@
   }
 
   /**
+   * renders the cart items from localStroage if non-empty
+   */
+  function renderCartItemsFromLocalStorage() {
+    if (window.localStorage.getItem("cart")) {
+      let vehicles = Object.values(JSON.parse(window.localStorage.getItem("cart")));
+      for (let i = 0; i < vehicles.length; i++) {
+        let vehicleID = vehicles[i].id;
+        let imgSrc = vehicles[i]["img-src"];
+        let imgAlt = vehicles[i]["img-alt"];
+        let name = vehicles[i].name;
+        let price = vehicles[i].price;
+        let card = gen("div");
+        card.classList.add("cart-card");
+        card.id = vehicleID;
+
+        let img = genVehicleImage(imgSrc, imgAlt);
+        card.appendChild(img);
+
+        let infoContainer = genVehicleInfoContainer(name, price, vehicleID);
+        card.appendChild(infoContainer);
+
+        id("cart-card-container").appendChild(card);
+        calculateCartTotal(vehicles[i]);
+      }
+    }
+  }
+
+  /**
+   * helper function that calculates the cart totals when
+   * the cart is rendered from localStorage
+   * @param {Object} vehicle - vehicle that is in the cart
+   */
+  function calculateCartTotal(vehicle) {
+    for(let i = 0; i < vehicle.count; i++) {
+      incrementCartItemCount(vehicle.id);
+      incrementCartTotal(vehicle.id, vehicle.price);
+      if (i > 0) {
+        incrementVehicleCartCount(vehicle.id, false);
+      }
+    }
+  }
+
+  /**
    * intiliazes button for adding selected item to cart
    */
   function addToCartButtonBehavior() {
@@ -330,7 +374,7 @@
     incrementCartItemCount(vehicleID);
 
     if (qs(`#cart-card-container #${vehicleID}`)) {
-      incrementVehicleCartCount(vehicleID);
+      incrementVehicleCartCount(vehicleID, true);
     } else {
       cartObj[vehicleID] = vehicleObj;
       window.localStorage.setItem("cart", JSON.stringify(cartObj));
@@ -457,7 +501,7 @@
     incrementButton.addEventListener("click", () => {
       incrementCartItemCount(vehicleID);
       incrementCartTotal(vehicleID, parseInt(price));
-      incrementVehicleCartCount(vehicleID);
+      incrementVehicleCartCount(vehicleID, true);
     });
     countContainer.appendChild(incrementButton);
     return countContainer;
@@ -494,13 +538,16 @@
    * helper function that increments the count for a particular vehicle card
    * in the cart if there is enough in stock
    * @param {string} vehicleID - vehicle id
+   * @param {boolean} updateLocalStorage - flag for if local storage should be updated
    */
-  function incrementVehicleCartCount(vehicleID) {
+  function incrementVehicleCartCount(vehicleID, updateLocalStorage) {
     let currentCount = qs(`#${vehicleID} .cart-card-count`);
     if (enoughInStock(vehicleID)) {
       currentCount.textContent = parseInt(currentCount.textContent) + 1;
-      cartObj[vehicleID]["count"] += 1;
-      window.localStorage.setItem("cart", JSON.stringify(cartObj));
+      if (updateLocalStorage) {
+        cartObj[vehicleID]["count"] += 1;
+        window.localStorage.setItem("cart", JSON.stringify(cartObj));
+      }
     }
   }
 
@@ -589,7 +636,7 @@
   function enoughInStock(vehicleID) {
     let currentCount = qs(`#${vehicleID} .cart-card-count`);
     let selectedStock = id("selected-stock");
-    return !currentCount ||
+    return (!currentCount || !selectedStock) ||
     (parseInt(currentCount.textContent) < parseInt(selectedStock.textContent));
   }
 
