@@ -39,9 +39,7 @@
     accountFunctions();
     confirmPurchase();
     messageButtonBehavior();
-    renderCartItemsFromLocalStorage()
-
-    console.log(document.cookie);
+    renderCartItemsFromLocalStorage();
     if (document.cookie) {
       showAccount();
     }
@@ -124,7 +122,6 @@
    * @param {Object} vehicles - all vehicles in checkout stage
    */
   function goToCheckout(vehicles) {
-    console.log(vehicles);
     id("check-out-contents").innerHTML = "";
     for (let i = 0; i < vehicles.length; i++) {
       addVehicleToCheckout(vehicles[i]);
@@ -132,7 +129,6 @@
   }
 
   function addVehicleToCheckout(info) {
-    console.log(info);
     let entry = gen("section");
     entry.classList.add("vehicle-checkout");
     let name = gen("h3");
@@ -244,7 +240,6 @@
       let username = document.cookie.split("=")[1];
       let data = new FormData();
       data.append("user", username);
-      console.log(JSON.stringify(cartObj));
       if (cartPurchase) {
         data.append("purchase", JSON.stringify(cartObj));
         cartObj = {};
@@ -352,8 +347,6 @@
       singlePurchase = {};
       let vehicleID = id("selected-name").textContent.split(" ").join("-").toLowerCase();
       singlePurchase[vehicleID] = createLocalStorageObject();
-      console.log(singlePurchase);
-      console.log(cartObj);
       await goToCheckout(Object.values(singlePurchase));
     } catch (err) {
       showMessage(err["message"]);
@@ -390,8 +383,6 @@
 
       id("cart-card-container").appendChild(card);
     }
-    console.log(cartObj);
-    console.log(JSON.stringify(cartObj));
   }
 
   /**
@@ -413,7 +404,6 @@
     vehicleObj["img-alt"] = vehicleImgAlt;
     vehicleObj["price"] = parseInt(price);
     vehicleObj["count"] = 1;
-    console.log(vehicleObj);
     return vehicleObj;
   }
 
@@ -764,7 +754,6 @@
    */
   function genVehicleRating(resp) {
     let rating = gen("p");
-    console.log(resp);
     if (resp["rating"] !== null) {
       rating.textContent = "Rating: " + (Math.round(resp["rating"] * 100) / 100) + "/5";
     } else {
