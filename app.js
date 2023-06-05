@@ -107,6 +107,7 @@ app.post("/reviews/new", async function(req, res) {
         query = "SELECT user, rating, comment, date FROM reviews WHERE id = ?"
         results = await db.get(query, results["lastID"]);
         await db.close();
+        await updateVehicleRating(name);
         res.type("json").send(results);
       } else {
         await db.close();
@@ -211,7 +212,7 @@ app.post("/deposit", async function(req, res) {
     } else if (!amount) {
       res.status(400).send("Insert deposit amount");
     } else {
-      let query = "UPDATE users SET balance = balance + ? WHERE username LIKE ?;";
+      let query = "UPDATE users SET balance = balance + ? WHERE username = ?;";
       let db = await getDBConnection();
       await db.run(query, [amount, user]);
       await db.close();
@@ -240,16 +241,193 @@ app.post("/account/history", async function(req, res) {
   }
 });
 
+// purchases an order of vehicle(s)
+app.post("/purchase", async function(req, res) {
+  res.type("text");
+  try {
+    const user = req.body["user"];
+    const purchase = req.body["purchase"];
+    if (user && purchase) {
+      let budget = await checkBudget(user, purchase);
+      if (budget) {
+        let stock = await checkStock(purchase);
+        if (stock) {
+          let code = await makePurchase(user, purchase);
+          res.send("" + code);
+        } else {
+          res.status(400).send("We do not have enough vehicles left in stock!");
+        }
+      } else {
+        res.status(400).send("You do not have enough money in your account to make the purchase!");
+      }
+    } else {
+    res.status(400).send("Not enough information to make purchase!");
+    }
+  } catch (err) {
+    res.status(500).send("Something on the server went wrong!");
+  }
+});
+
+/**
+ * updates average rating of a vehicle after a review has been made
+ * @param {string} vehicle - vehicle of the review
+ */
+async function updateVehicleRating(vehicle) {
+  try {
+    let query = "SELECT AVG(rating) as avg FROM reviews WHERE vehicle = ?;";
+    let db = await getDBConnection();
+    let results = await db.get(query, vehicle);
+    query = "UPDATE vehicles SET rating = ? WHERE name = ?";
+    results = await db.run(query, [results["avg"], vehicle]);
+  } catch (err) {
+
+  }
+}
+
+/**
+ * makes a purchase and updates the database
+ * @param {string} user - provided username
+ * @param {string} purchase - all vehicles to be purchased
+ */
+async function makePurchase(user, purchase) {
+  try {
+    purchase = Object.values(JSON.parse(purchase));
+    let code = Math.floor(Math.random() * 1000000000);
+    let query = "SELECT code FROM transactions WHERE code = ?;";
+    let db = await getDBConnection();
+    let results = await db.get(query, code);
+    while (results) {
+      code = Math.floor(Math.random() * 1000000000);
+      results = await db.get(query, code);
+    }
+    await db.close();
+    for (let i = 0; i < purchase.length; i++) {
+      await updateVehicle(purchase[i]);
+      await updateBalance(user, purchase[i]);
+      await updateHistory(user, purchase[i], code);
+    }
+    console.log("code = " + code);
+    return code;
+  } catch (err) {
+
+  }
+}
+
+/**
+ * updates vehicles database
+ * @param {Object} vehicle - vehicle to be purchased
+ */
+async function updateVehicle(vehicle) {
+  try {
+    let query = "UPDATE vehicles SET \"in-stock\" = \"in-stock\" - ? WHERE name = ?;";
+    let db = await getDBConnection();
+    await db.run(query, [vehicle["count"], vehicle["name"]]);
+    await db.close();
+    console.log("vehicles updated");
+  } catch (err) {
+
+  }
+}
+
+/**
+ * updates user balance
+ * @param {string} user - provided username
+ * @param {string} vehicle - vehicle to be purchased
+ */
+async function updateBalance(user, vehicle) {
+  try {
+    let query = "UPDATE users SET balance = balance - ? WHERE username = ?;";
+    let db = await getDBConnection();
+    await db.run(query, [vehicle["price"] * vehicle["count"], user]);
+    await db.close();
+    console.log("balance updated");
+  } catch (err) {
+
+  }
+}
+
+/**
+ * updates transaction history of database
+ * @param {string} user - provided username
+ * @param {string} vehicle - vehicle to be purchased
+ * @param {int} code - transaction code
+ */
+async function updateHistory(user, vehicle, code) {
+  try {
+    let query = "INSERT INTO transactions (user, vehicle, code) VALUES (?, ?, ?);";
+    let db = await getDBConnection();
+    await db.run(query, [user, vehicle["name"], code]);
+    await db.close();
+    console.log("history updated");
+  } catch (err) {
+
+  }
+}
+
+/**
+ * Checks if a user exist in the database
+ * @param {string} username - provided username
+ * @param {string} purchase - all vehicles to be purchased
+ * @returns {boolean} whether a user have enough budget for the purchase
+ */
+async function checkBudget(username, purchase) {
+  try {
+    let cost = 0;
+    purchase = Object.values(JSON.parse(purchase));
+    for (let i = 0; i < purchase.length; i++) {
+      cost += purchase[i]["price"] * purchase[i]["count"];
+      console.log(cost);
+    }
+    console.log(cost);
+    let query = "SELECT username FROM users WHERE username = ? AND balance >= ?;";
+    let db = await getDBConnection();
+    let results = await db.get(query, [username, cost]);
+    await db.close();
+    return results;
+  } catch (err) {
+    return false;
+  }
+}
+
+/**
+ * Checks if enough vehicles are left in stock for an order
+ * @param {string} purchase - all vehicles to be purchased
+ * @returns {boolean} whether enough vehicles are left in stock
+ */
+async function checkStock(purchase) {
+  try {
+    purchase = Object.values(JSON.parse(purchase));
+    let db = await getDBConnection();
+    for (let i = 0; i < purchase.length; i++) {
+      let name = purchase[i]["name"];
+      let count = purchase[i]["count"];
+      console.log(name + count);
+      let query = "SELECT name FROM vehicles WHERE name = ? AND \"in-stock\" >= ?;";
+      let results = await db.get(query, [name, count]);
+      console.log(results);
+      if (!results) {
+        await db.close();
+        return false;
+      }
+    }
+    await db.close();
+    return true;
+  } catch (err) {
+    return false;
+  }
+}
+
 /**
  * Checks if a user exist in the database
  * @param {string} username - provided username
  * @returns {boolean} whether a username exists in the database
-*/
+ */
 async function checkUserName(username) {
   try {
     let query = "SELECT username FROM users WHERE username = ?";
     let db = await getDBConnection();
     let results = await db.get(query, username);
+    await db.close();
     return results;
   } catch (err) {
     return false;

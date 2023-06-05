@@ -12,6 +12,8 @@
 
   // MODULE GLOBAL VARIABLES, CONSTANTS, AND HELPER FUNCTIONS CAN BE PLACED HERE
   let cartObj = {};
+  let cartPurchase = false;
+  let singlePurchase = {};
   /**
    * Add a function that will be called when the window is loaded.
    */
@@ -27,6 +29,7 @@
     toggleCheckoutScreen();
     navigateBetweenForms();
     closeForms();
+    buyNowButtonBehavior();
     addToCartButtonBehavior();
     backFromVehicleView();
     backFromCheckout();
@@ -34,6 +37,8 @@
     vehicleViewBehaviors();
     userFormBehaviors();
     accountFunctions();
+    confirmPurchase();
+    messageButtonBehavior();
 
     console.log(document.cookie);
     if (document.cookie) {
@@ -43,7 +48,7 @@
     try {
       await getVehicles();
     } catch (err) {
-
+      showMessage(err["message"]);
     }
   }
 
@@ -79,7 +84,8 @@
     let logInHidden = id("log-in-form").classList.contains("hidden");
     let signUpHidden = id("sign-up-form").classList.contains("hidden");
     let accountHidden = id("account-form").classList.contains("hidden");
-    if (logInHidden && signUpHidden && accountHidden) {
+    let checkoutHidden = id("check-out-container").classList.contains("hidden");
+    if (logInHidden && signUpHidden && accountHidden && checkoutHidden) {
       toggleForm("cart");
     }
   }
@@ -91,7 +97,8 @@
   function toggleCheckoutScreen() {
     id("check-out-btn").addEventListener("click", () => {
       hideCurrentView();
-      appendCartItemsToCheckout();
+      cartPurchase = true;
+      goToCheckout(Object.values(cartObj));
     })
   }
 
@@ -107,8 +114,41 @@
      currentView = "vehicle-container";
    }
    id(currentView).classList.add("hidden");
+   id("cart").classList.add("hidden");
    id("check-out-container").classList.remove("hidden");
  }
+
+ /**
+   * go to checkout view where users can confirm purchase
+   * @param {Object} vehicles - all vehicles in checkout stage
+   */
+  function goToCheckout(vehicles) {
+    console.log(vehicles);
+    id("check-out-contents").innerHTML = "";
+    for (let i = 0; i < vehicles.length; i++) {
+      addVehicleToCheckout(vehicles[i]);
+    }
+  }
+
+  function addVehicleToCheckout(info) {
+    console.log(info);
+    let entry = gen("section");
+    entry.classList.add("vehicle-checkout");
+    let name = gen("h3");
+    name.textContent = info["name"];
+    let pic = gen("img");
+    pic.src = info["img-src"];
+    pic.alt = info["img-alt"];
+    let count = gen("p");
+    count.textContent = "Quantity: " + info["count"];
+    let price = gen("p");
+    price.textContent = "$" + info["price"] + " x " + info["count"];
+    entry.appendChild(name);
+    entry.appendChild(pic);
+    entry.appendChild(count);
+    entry.appendChild(price);
+    id("check-out-contents").appendChild(entry);
+  }
 
   /**
    * Adds the event listener necessary for navigating between login
@@ -121,7 +161,7 @@
 
   /**
    * Toggles which form is displayed to the user
-  */
+   */
   function switchForms() {
     toggleForm("log-in-form");
     toggleForm("sign-up-form");
@@ -190,6 +230,37 @@
   }
 
   /**
+   * confirms purchase in checkout view
+   */
+  function confirmPurchase() {
+    id("confirm-purchase-btn").addEventListener("click", async () => {
+      await makePurchase();
+    })
+  }
+
+  async function makePurchase() {
+    try {
+      let username = document.cookie.split("=")[1];
+      let data = new FormData();
+      data.append("user", username);
+      console.log(JSON.stringify(cartObj));
+      if (cartPurchase) {
+        data.append("purchase", JSON.stringify(cartObj));
+        cartObj = {};
+        window.localStorage.removeItem("cart");
+      } else {
+        data.append("purchase", JSON.stringify(singlePurchase));
+      }
+      let resp = await fetch("/purchase", {method: "POST", body: data});
+      await statusCheck(resp);
+      resp = await resp.text();
+      showMessage("Purchase Successful! Your Transaction Code is " + resp);
+    } catch (err) {
+      showMessage(err["message"]);
+    }
+  }
+
+  /**
    * helper function that toggles a given form in our out of view
    * @param {string} formId - id of the form to toggle
    */
@@ -222,6 +293,30 @@
   }
 
   /**
+   * intiliazes button for buy now
+   */
+  function buyNowButtonBehavior() {
+    id("buy-now").addEventListener("click", async function() {
+      hideCurrentView();
+      cartPurchase = false;
+      await buyNow();
+    });
+  }
+
+  async function buyNow() {
+    try {
+      singlePurchase = {};
+      let vehicleID = id("selected-name").textContent.split(" ").join("-").toLowerCase();
+      singlePurchase[vehicleID] = createLocalStorageObject();
+      console.log(singlePurchase);
+      console.log(cartObj);
+      await goToCheckout(Object.values(singlePurchase));
+    } catch (err) {
+      showMessage(err["message"]);
+    }
+  }
+
+  /**
    * adds the selected item to the cart
    */
   function addItemToCart() {
@@ -234,7 +329,7 @@
     incrementCartTotal(vehicleID, parseInt(price));
     incrementCartItemCount(vehicleID);
 
-    if(qs(`#cart-card-container #${vehicleID}`)) {
+    if (qs(`#cart-card-container #${vehicleID}`)) {
       incrementVehicleCartCount(vehicleID);
     } else {
       cartObj[vehicleID] = vehicleObj;
@@ -252,18 +347,19 @@
       id("cart-card-container").appendChild(card);
     }
     console.log(cartObj);
+    console.log(JSON.stringify(cartObj));
   }
 
-  /**r
+  /**
    * creates an object for storing data about a particular vehicle that is
    * added to the cart to local storage
    * @returns {Object} - object containing data about a particular vehicle
    */
   function createLocalStorageObject() {
-    let vehicleImg = id("selected-img").src;
-    let vehicleImgAlt = id("selected-img").alt;
     let vehicleName = id("selected-name").textContent;
     let vehicleID = vehicleName.split(" ").join("-").toLowerCase();
+    let vehicleImg = "img/vehicles/" + vehicleID + ".png";
+    let vehicleImgAlt = id("selected-img").alt;
     let price = id("selected-price").textContent;
     let vehicleObj = {};
     vehicleObj["name"] = vehicleName;
@@ -272,6 +368,7 @@
     vehicleObj["img-alt"] = vehicleImgAlt;
     vehicleObj["price"] = parseInt(price);
     vehicleObj["count"] = 1;
+    console.log(vehicleObj);
     return vehicleObj;
   }
 
@@ -519,9 +616,7 @@
       resp = await resp.text();
       await displayVehicles(resp);
     } catch (err) {
-      let txt = gen("p");
-      let board = id("main-container");
-      board.appendChild(txt);
+      showMessage(err["message"]);
     }
   }
 
@@ -539,7 +634,7 @@
         makeVehicleCard(resp);
       }
     } catch (err) {
-
+      showMessage(err["message"]);
     }
   }
 
@@ -579,7 +674,7 @@
       vehicleInfo(resp);
       await vehicleReview(resp["name"]);
     } catch (err) {
-
+      showMessage(err["message"]);
     }
   }
 
@@ -647,6 +742,7 @@
    */
   function genVehicleRating(resp) {
     let rating = gen("p");
+    console.log(resp);
     if (resp["rating"] !== null) {
       rating.textContent = "Rating: " + (Math.round(resp["rating"] * 100) / 100) + "/5";
     } else {
@@ -667,7 +763,7 @@
       id("reviews").innerHTML = "";
       displayReviews(resp, false);
     } catch (err) {
-
+      showMessage(err["message"]);
     }
   }
 
@@ -737,8 +833,10 @@
       arr.push(resp);
       displayReviews(arr, true);
       id("add-review").classList.add("hidden");
+      showMessage("Review Added Successfully!");
     } catch (err) {
-
+      console.log(err);
+      showMessage(err["message"]);
     }
   }
 
@@ -776,7 +874,7 @@
       await resetFilter();
       mainPageView();
     } catch (err) {
-
+      showMessage(err["message"]);
     }
   }
 
@@ -787,6 +885,8 @@
     id("main-container").classList.remove("hidden");
     id("vehicle-container").classList.add("hidden");
     id("history-page").classList.add("hidden");
+    id("check-out-container").classList.add("hidden");
+    id("message-page").classList.add("hidden");
   }
 
   /**
@@ -798,7 +898,7 @@
     try {
       await getVehicles();
     } catch (err) {
-
+      showMessage(err["message"]);
     }
   }
 
@@ -832,7 +932,7 @@
         resp = await resp.json();
         await userLogIn(resp["username"], resp["password"]);
       } catch (err) {
-
+        showMessage(err["message"]);
       }
     } else { // passwords don't match
       qs("#sign-up-form > form > p").classList.remove("hidden");
@@ -846,7 +946,7 @@
     try {
       await userLogIn(id("login-user").value, id("login-password").value);
     } catch (err) {
-
+      showMessage(err["message"]);
     }
   }
 
@@ -862,7 +962,7 @@
       await statusCheck(resp);
       showAccount();
     } catch (err) {
-
+      showMessage(err["message"]);
     }
   }
 
@@ -908,6 +1008,15 @@
   }
 
   /**
+   * adds event listeners to various buttons
+   */
+  function messageButtonBehavior() {
+    qs("#message-page button").addEventListener("click", async function() {
+      await home();
+    })
+  }
+
+  /**
    * shows the deposit form where user's can make deposit
    */
   async function deposit() {
@@ -919,7 +1028,7 @@
       }
       await getMyBalance();
     } catch (err) {
-
+      showMessage(err["message"]);
     }
   }
 
@@ -935,7 +1044,7 @@
       resp = await resp.text();
       id("current-balance").textContent = "My Current Balance: $" + resp;
     } catch (err) {
-
+      showMessage(err["message"]);
     }
   }
 
@@ -953,9 +1062,9 @@
       qs("#deposit-form form input").value = "";
       id("deposit-form").classList.add("hidden");
       resp = await resp.text();
-      await showMessage(resp);
+      showMessage(resp);
     } catch (err) {
-
+      showMessage(err["message"]);
     }
   }
 
@@ -971,7 +1080,7 @@
       resp = await resp.json();
       showHistory(resp);
     } catch (err) {
-
+      showMessage(err["message"]);
     }
   }
 
@@ -1010,17 +1119,27 @@
     id("profile-btn").classList.remove("hidden");
     try {
       await home();
-    } catch (error) {
-
+    } catch (err) {
+      showMessage(err["message"]);
     }
   }
 
   /**
-   * displays a helpful message when certain actions are performed
+   * displays a helpful message when certain actions are performed or when error occurs
    * @param {string} msg - message to be displayed
    */
-  async function showMessage(msg) {
-
+  function showMessage(msg) {
+    console.log(msg);
+    qs("#message-page p").textContent = msg;
+    id("message-page").classList.remove("hidden");
+    id("main-container").classList.add("hidden");
+    id("vehicle-container").classList.add("hidden");
+    id("check-out-container").classList.add("hidden");
+    id("history-page").classList.add("hidden");
+    id("sign-up-form").classList.add("hidden");
+    id("log-in-form").classList.add("hidden");
+    id("account-form").classList.add("hidden");
+    id("deposit-form").classList.add("hidden");
   }
 
   /** ------------------------------ Helper Functions  ------------------------------ */
