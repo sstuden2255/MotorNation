@@ -123,7 +123,7 @@ app.post("/reviews/new", async function(req, res) {
   const rating = parseInt(req.body["rating"]);
   const comment = req.body["comment"];
   try {
-    if (name && user && rating && comment && rating > 1 && rating < 5) {
+    if (name && user && rating && comment && rating >= 1 && rating <= 5) {
       let query = "SELECT user FROM transactions WHERE user = ? AND vehicle = ?;";
       let db = await getDBConnection();
       let results = await db.get(query, [user, name]);
@@ -437,7 +437,9 @@ async function updateHistory(user, vehicle, code) {
   try {
     let query = "INSERT INTO transactions (user, vehicle, code) VALUES (?, ?, ?);";
     let db = await getDBConnection();
-    await db.run(query, [user, vehicle["name"], code]);
+    for (let i = 0; i < vehicle["count"]; i++) {
+      await db.run(query, [user, vehicle["name"], code]);
+    }
     await db.close();
   } catch (err) {
     return err;

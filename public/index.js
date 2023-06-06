@@ -287,6 +287,8 @@
         data.append("purchase", JSON.stringify(cartObj));
         cartObj = {};
         window.localStorage.removeItem("cart");
+        id("cart-card-container").innerHTML = "";
+        cartEmptyToggles();
       } else {
         data.append("purchase", JSON.stringify(singlePurchase));
       }
@@ -1032,7 +1034,7 @@
       let resp = await fetch("/login", {method: "POST", body: data});
       await statusCheck(resp);
       showAccount();
-      localStorage.setItem("user", username)
+      localStorage.setItem("user", username);
       id("login-user").value = localStorage.getItem("user");
     } catch (err) {
       showMessage(err["message"]);
