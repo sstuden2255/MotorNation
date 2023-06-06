@@ -3,238 +3,319 @@ The Motor Nation API provides information about all of the vehicles in the datab
 
 
 ## *Get a list of vehicles matching filter parameters*
-**Request Format:** /vehicles?maxPrice=X&type=Y&search=Z
+**Request Format:** /vehicles?maxPrice=X&type=Y
 
 **Request Type:** GET
 
 **Returned Data Format:** Plain text
 
-**Description:** Return a list of all vehicles matching the given type and price filters.
+**Description:** Returns a list of all vehicles matching the given type and price filters.
 
-
-**Example Request:** /vehicles?maxPrice=10000&type=car
+**Example Request:** /vehicles?maxPrice=100000&type=car
 
 **Parameters:**
 - `maxPrice`: the maximum price of returned vehicles (i.e. 10000, 20000, ..., 10000000)
 - `type`: the type of vehicle returned (i.e. car, boat)
-- `search`: input that user enters to search for, can be empty
 
 **Example Response:**
 
 ```
-asbo
-blista
-brioso
-brioso2
-weevil
+Asterope
+Baller
+Blista
+Tailgater S
+Windsor
 ...
 ```
 
 **Error Handling:**
 - Possible 400 (invalid request) errors (all plain text):
-  - if no maximum price is selected, an error is returned with the message: `Please select a maxiumum price when searching for vehicles.`
-  - if non type is selected, an error is returned with the message: `Please select the type of vehicle you would like to view.`
+  - if a filter is missing, an error is returned with the message: `Missing a Filter Parameter`
+- Possible 500 errors (all plain text):
+  - if something goes wrong on the server or the database, returns an error message: `Something on the server went wrong!`
 
-## *Check if username and password exist*
-**Request Format:** /users
+## *Get a list of vehicles matching search terms*
+**Request Format:** /search/vehicles?search=X
 
-**Request Type:** POST
+**Request Type:** GET
 
 **Returned Data Format:** Plain text
 
-**Description:** When a user submits a username and password, checks if the username and password pair exists in the database and returns a success or failure response.
+**Description:** Returns a list of all vehicles matching the search term.
 
-**Example Request:** /users with POST parameters of `username=example@abc.com` and `password=ABC123`
+**Example Request:** /search/vehicles?search=police
 
 **Parameters:**
-- `username`: user's email
-- `password`: user's password
+- `search`: the search term
 
 **Example Response:**
 
 ```
-Success
+Police
 ```
 
 **Error Handling:**
 - Possible 400 (invalid request) errors (all plain text):
-  - if email does not exist in database, an error is returned with the message: `No account is linked to this emaill adresss.`
-  - if email exists, but password is incorrect, an error is returned with the message: `The username and password do not match, please try again.`
+  - if search term is empty, an error is returned with the message: `Please Provide a Search Term.`
+- Possible 500 errors (all plain text):
+  - if something goes wrong on the server or the database, returns an error message: `Something on the server went wrong!`
 
-## *Get data of a specific vehicle*
+## *Get information of a specific vehicle*
 **Request Format:** /vehicles/:vehicle_name
 
 **Request Type:** GET
 
 **Returned Data Format:** JSON
 
-**Description:** When a user clicks on a vehicle, returns information about the vehicle
+**Description:** Returns information of a selected vehicle when user clicks on a vehicle card
 
-**Example Request:** /vehicles/fordf-150
+**Example Request:** /vehicles/Police
 
 **Parameters:**
-- `vehicle_name`: short name/identifier of the vehicle
+- `vehicle_name`: Name of the vehicle
 
 **Example Response:**
 
 ```json
 {
-    "name": "Ford F-150",
-    "type": "pickup-truck",
-    "price": 30000,
-    "color": "white",
-    "remaining": 500,
-    "image": "images/vehicles/fordf-150.png",
-    "ratings": [
-      {
-        "star": 5,
-        "comment": "murica baby"
-      },
-      {
-        "star": 3,
-        "comment": "eats too much gas"
-      }
-    ]
+  "name": "Police",
+  "type": "other",
+  "price": 50000,
+  "in-stock": 30,
+  "rating": 3.357142857142857,
+  "picture": "img/vehicles/police.png"
 }
 ```
 
 **Error Handling:**
-- Possible 400 (invalid request) errors (all plain text):
-  - if vehicle name doesn't not exist in the database, an error is returned with the message: `Vehicle with given name does not exist in database, please try a different name.`
 - Possible 500 errors (all plain text):
-  - If something goes wrong on the server or the database, returns an error message: `Oops! Something went wrong. Unable to load. Please try again later. :(`
+  - if something goes wrong on the server or the database, returns an error message: `Something on the server went wrong!`
 
-## *Purchasing a vehicle*
-**Request Format:** /vehicles/buy/:vehicle_name
+## *Get Reviews of a Vehicle*
+**Request Format:** /reviews/all/:vehicle_name
 
-**Request Type:** POST
+**Request Type:** get
 
-**Returned Data Format:** TEXT
+**Returned Data Format:** JSON
 
-**Description:** When a user attempts to make a purchase, checks to see if transaction can be made. For a purchase to be successful, a user must be logged in, have enough money in their balance to purchase the vehicle, and the vehicle needs to be in stock
+**Description:** When a user selects a vehicle, returns the all reviews of said vehicle
 
-**Example Request:** /vehicles/buy/fordf-150 with POST parameters of `loggedIn=true`,`balance=50000`, and `remaining=500`
+**Example Request:** /reviews/all/Police
 
 **Parameters:**
-- `loggedIn`: whether user is logged in or not
-- `balance`: amount of money a user have in their account
-- `remaining`: amount of given vehicle in stock
+- `vehicle_name`: name of vehicle
 
 **Example Response:**
 
-```
-// Success
-123456
-
-// Failure
-"No More Left in Stock!"
+```json
+[
+  {
+    "user": "OfficerBob",
+    "rating": 5,
+    "comment": "good, fast, reliable",
+    "date": "2023-06-05 10:10:30"
+  },
+  {
+    "user": "idontdocrimes",
+    "rating": 5,
+    "comment": "they really think im a cop lolol",
+    "date": "2023-06-05 10:09:31"
+  }
+]
 ```
 
 **Error Handling:**
-- Posible 400 errors (all plain text):
-  - If the user is not logged in and tries to make a purchase, returns error message: `Please log in before making a purchase!`
-  - If the selected vehicle is out of stock, returns error message: `This vehicle is out of stock. Please browse for other vehicles or check back in the future!`
-  - If the user does not have enough money to buy a vehicle, returns error message: `Your account balance is not enough to buy this vehicle!`
 - Possible 500 errors (all plain text):
-  - If something goes wrong on the server or the database, returns an error message: `Oops! Something went wrong. Transaction Failed. Please try again later. :(`
+  - If something goes wrong on the server or the database, returns an error message: `Something on the server went wrong!`
 
-## *Accessing transaction history*
-**Request Format:** /account/history
+## *Adds a review for a vehicle*
+**Request Format:** /reviews/new
 
 **Request Type:** POST
 
 **Returned Data Format:** JSON
 
-**Description:** When a user checks their transaction history, returns information of all history associated with that account including the name of the vehicle and confirmation code
+**Description:** After a user have purchased a vehicle, they can leave a rating and comment on the vehicle, the new review is then returned
 
-**Example Request:** /account/default_username/history with POST parameters of `loggedIn=true`, `account=example@123.com`
+**Example Request:** /reviews/new with POST parameters of `vehicle=Police` `rating=3`, and `comment=getting outdated, we need upgrades`
 
 **Parameters:**
-- `loggedIn`: whether user is logged in or not
-- `account`: username of the account that is logged in
+- `vehicle`: name of vehicle
+- `rating`: 1-5 rating of the vehicle
+- `comment`: comment on the review
 
 **Example Response:**
 
 ```json
-// Success
 {
-    "purchases": [
-      {
-        "vehicle": "Ford F-150",
-        "code": 123456
-      },
-      {
-        "vehicle": "Tank",
-        "code": 654321
-      }
-    ]
+  "user": "idontdocrimes",
+  "rating": 5,
+  "comment": "they really think im a cop lolol",
+  "date": "2023-06-05 10:09:31"
 }
 ```
 
 **Error Handling:**
 - Posible 400 errors (all plain text):
-  - If the user is not logged in, returns error message: `Please log in!`
+  - If the user is not logged in, returns error message: `Not enough / incorrect information provided. Please Log In.`
+  - If the user provides a rating outside of 1-5 range, returns error message `Not enough / incorrect information provided. Please Log In.`
+  - If the user have not purchased the selected vehicle before reviewing, returns error message: `You have not purchased this vehicle.`
 - Possible 500 errors (all plain text):
-  - If something goes wrong on the server or the database, returns an error message: `Oops! Something went wrong. Please try again later. :(`
+  - If something goes wrong on the server or the database, returns an error message: `Something on the server went wrong!`
 
-## *Provide Feedback/Rating*
-**Request Format:** /:vehicle/rate
-
-**Request Type:** POST
-
-**Returned Data Format:** TEXT
-
-**Description:** After a user have purchased a vehicle, they can leave a rating and comment on the vehicle
-
-**Example Request:** /fordf-150/rate with POST parameters of `rating=5`, `comment=awesome`
-
-**Parameters:**
-- `rating`: rating for the vehicle (out of 5)
-- `comment`: the comment that the user leaves for the vehicle
-
-**Example Response:**
-
-```
-Review Added Successfully!
-```
-
-**Error Handling:**
-- Posible 400 errors (all plain text):
-  - If the user is not logged in, returns error message: `Please log in!`
-  - If the user have not purchased the selected vehicle before reviewing, returns error message: `You cannot leave a review as you have not purchased this vehicle.`
-- Possible 500 errors (all plain text):
-  - If something goes wrong on the server or the database, returns an error message: `Oops! Something went wrong. Please try again later. :(`
-
-## *Creating a new user*
+## *creates a new account*
 **Request Format:** /account/create
 
 **Request Type:** POST
 
-**Returned Data Format**: TEXT
+**Returned Data Format:** JSON
 
-**Description:** When a user fills in all their information in the sign up
-form and hits the submit button, a POST request is made to the account endpoint and their information is added to the database.
+**Description:** creates a new account when a user signs up
 
-**Example Request:** /account/create with POST parameters of
-- `firstName=John`
-- `LastName=Doe`
-- `email=name123@example.com`
-- `password=123abc`
+**Example Request:** /account/create with POST parameters of `username=johnsmith123`, `email=johnsmith123@outlook.com`, and `password=Password123`
 
 **Parameters:**
-- `firstName`: First name of the user
-- `lastName`: Last name of the user
-- `email`: Users email
-- `password`: User's password
+- `username`: user's selected username
+- `email`: user's email address
+- `password`: user's password
+
+**Example Response:**
+
+```json
+{
+  "username": "JohnSmith123",
+  "password": "Password123"
+}
+```
+
+**Error Handling:**
+- Possible 400 (invalid request) errors (all plain text):
+  - if email is linked to an existing account, an error is returned with the message: `An account with that email address already exists.`
+  - if selected username is taken, an error is returned with the message: `Username already taken`
+  - if either username, email, or password is not provided, an error is returned with the message: `A field is missing!`
+- Possible 500 errors (all plain text):
+  - if something goes wrong on the server or the database, returns an error message: `Something on the server went wrong!`
+
+## *Returns user balance*
+**Request Format:** /balance
+
+**Request Type:** GET
+
+**Returned Data Format:** Plain text
+
+**Description:** When a user wants to deposit, shows current balance in their account
+
+**Example Request:** /balance
+
+**Parameters:**
+- none
 
 **Example Response:**
 
 ```
-Success
+25000
 ```
 
 **Error Handling:**
 - Posible 400 errors (all plain text):
-  - If the user tries to create an account with an email that already exists in the database, returns error message: `An account with that email address already exists.`
+  - If the user is not logged in, returns error message: `Not logged in`
+  - If username does not exist, returns error message `Username does not exist.`
 - Possible 500 errors (all plain text):
-  - If something goes wrong on the server or the database, returns an error message: `Oops! Something went wrong. Please try again later. :(`
+  - If something goes wrong on the server or the database, returns an error message: `Something on the server went wrong`
+
+## *Make deposit*
+**Request Format:** /deposit
+
+**Request Type:** POST
+
+**Returned Data Format:** Plain text
+
+**Description:** When a user makes a deposit, updates their account balance
+
+**Example Request:** /deposit with POST parameters of `amount=25000`
+
+**Parameters:**
+- `amount`: amount of money to be deposited
+
+**Example Response:**
+
+```
+Deposit Successful
+```
+
+**Error Handling:**
+- Posible 400 errors (all plain text):
+  - If the user is not logged in, returns error message: `Not logged in`
+  - If the user does not specify deposit amount, returns error message `Insert deposit amount`
+- Possible 500 errors (all plain text):
+  - If something goes wrong on the server or the database, returns an error message: `Something on the server went wrong`
+
+## *Accessing transaction history*
+**Request Format:** /account/history
+
+**Request Type:** GET
+
+**Returned Data Format:** JSON
+
+**Description:** When a user checks their transaction history, returns information of all history associated with that account including the name of the vehicle and confirmation code
+
+**Example Request:** /account/history
+
+**Parameters:**
+- none
+
+**Example Response:**
+
+```json
+[
+  {
+    "vehicle": "Avenger",
+    "date": "2023-06-04 18:18:20",
+    "code": 123846981
+  },
+  {
+    "vehicle": "Police",
+    "date": "2023-06-03 16:30:14",
+    "code": 1345
+  },
+  {
+    "vehicle": "Police",
+    "date": "2023-06-03 11:20:14",
+    "code": 12345
+  }
+]
+```
+
+**Error Handling:**
+- Posible 400 errors (all plain text):
+  - If the user is not logged in, returns error message: `Not Logged In`
+- Possible 500 errors (all plain text):
+  - If something goes wrong on the server or the database, returns an error message: `Something on the server went wrong`
+
+## *Makes a purchase of vehicle(s)*
+**Request Format:** /vehicles/buy/:vehicle_name
+
+**Request Type:** POST
+
+**Returned Data Format:** Plain text
+
+**Description:** When a user attempts to make a purchase, checks to see if transaction can be made. For a purchase to be successful, a user must be logged in, have enough money in their balance to purchase the vehicle, and the vehicle needs to be in stock. If purchase is successful, transaction code is returned
+
+**Example Request:** /purchase with POST parameters of `purchase={"asterope":{"name":"Asterope","id":"asterope","img-src":"img/vehicles/asterope.png","img-alt":"Asterope","price":15000,"count":1}}`
+
+**Parameters:**
+- `purchase`: information as to which vehicles to be purchased
+
+**Example Response:**
+
+```
+123456
+```
+
+**Error Handling:**
+- Posible 400 errors (all plain text):
+  - If the user is not logged in and tries to make a purchase, returns error message: `Not enough information to make purchase! Please Log In!`
+  - If the selected vehicle is out of stock, returns error message: `We do not have enough vehicles left in stock!`
+  - If the user does not have enough money to buy a vehicle, returns error message: `You do not have enough money in your account to make the purchase!`
+- Possible 500 errors (all plain text):
+  - If something goes wrong on the server or the database, returns an error message: `Oops! Something went wrong. Transaction Failed. Please try again later. :(`

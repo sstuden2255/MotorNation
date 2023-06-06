@@ -14,6 +14,7 @@
   let cartObj = {};
   let cartPurchase = false;
   let singlePurchase = {};
+
   /**
    * Add a function that will be called when the window is loaded.
    */
@@ -24,7 +25,7 @@
    */
   async function init() {
     mainPageBehaviors();
-    searchButtonBehavior();
+    searchBarBehavior();
     toggleLoginForm();
     toggleCart();
     toggleCheckoutScreen();
@@ -52,13 +53,19 @@
     }
   }
 
-  function searchButtonBehavior() {
+  /**
+   * initializes search bar behavior
+   */
+  function searchBarBehavior() {
     qs(".search-bar-container button").addEventListener("click", async function() {
       await makeSearch();
     });
     qs(".search-bar-container input").addEventListener("input", searchButtonDisable);
   }
 
+  /**
+   * disables search button if input is blank
+   */
   function searchButtonDisable() {
     let button = qs(".search-bar-container button");
     if (this.value.trim() === "") {
@@ -68,6 +75,9 @@
     }
   }
 
+  /**
+   * searches through database for vehicles using search bar
+   */
   async function makeSearch() {
     try {
       let term = qs(".search-bar-container input").value.trim();
@@ -76,7 +86,7 @@
       resp = await resp.text();
       await displayVehicles(resp);
     } catch (err) {
-
+      showMessage(err["message"]);
     }
   }
 
@@ -205,28 +215,25 @@
     qs("#log-in-form .close").addEventListener("click", () => {
       toggleForm("log-in-form");
     });
-
     qs("#sign-up-form .close").addEventListener("click", () => {
       toggleForm("sign-up-form");
     });
-
     qs("#cart .close").addEventListener("click", () => {
       toggleForm("cart");
     });
-
     qs("#account-form .close").addEventListener("click", () => {
       toggleForm("account-form");
     });
-
     qs("#deposit-form .close").addEventListener("click", () => {
       toggleForm("deposit-form");
     });
-
+    qs("#add-review .close").addEventListener("click", () => {
+      toggleForm("add-review");
+    });
     id("main-container").addEventListener("click", () => {
       hideForm("log-in-form");
       hideForm("sign-up-form");
     });
-
     qs(".search-bar-container").addEventListener("click", () => {
       hideForm("log-in-form");
       hideForm("sign-up-form");
@@ -351,7 +358,7 @@
    * @param {Object} vehicle - vehicle that is in the cart
    */
   function calculateCartTotal(vehicle) {
-    for(let i = 0; i < vehicle.count; i++) {
+    for (let i = 0; i < vehicle.count; i++) {
       incrementCartItemCount(vehicle.id);
       incrementCartTotal(vehicle.id, vehicle.price);
       if (i > 0) {
@@ -678,7 +685,6 @@
    */
   async function displayVehicles(names) {
     try {
-      console.log("n" + names);
       id("main-container").classList.remove("hidden");
       id("vehicle-container").classList.add("hidden");
       id("check-out-container").classList.add("hidden");
@@ -687,7 +693,6 @@
       id("vehicles-view").innerHTML = "";
       if (names !== "") {
         const vehicles = names.trim().split("\n");
-        console.log(vehicles.length);
         for (let i = 0; i < vehicles.length; i++) {
           let resp = await fetch("/vehicles/" + vehicles[i]);
           resp = await resp.json();
@@ -819,7 +824,7 @@
    */
   async function vehicleReview(name) {
     try {
-      let resp = await fetch("/reviews/" + name);
+      let resp = await fetch("/reviews/all/" + name);
       await statusCheck(resp);
       resp = await resp.json();
       id("reviews").innerHTML = "";
@@ -880,12 +885,10 @@
   async function submitReview() {
     try {
       let vehicle = qs("#info-container h1").textContent;
-      let username = document.cookie.split("=")[1];
       let rating = id("rate").value;
       let comment = qs("#add-review input").value;
       let data = new FormData();
       data.append("vehicle", vehicle);
-      data.append("user", username);
       data.append("rating", rating);
       data.append("comment", comment);
       let resp = await fetch("/reviews/new", {method: "POST", body: data});
@@ -897,6 +900,8 @@
       id("add-review").classList.add("hidden");
       showMessage("Review Added Successfully!");
     } catch (err) {
+      addReview();
+      id("add-review").classList.add("hidden");
       showMessage(err["message"]);
     }
   }
@@ -975,6 +980,9 @@
       evt.preventDefault();
       await logIn();
     });
+    if (localStorage.getItem("user")) {
+      id("login-user").value = localStorage.getItem("user");
+    }
   }
 
   /**
@@ -1024,6 +1032,8 @@
       let resp = await fetch("/login", {method: "POST", body: data});
       await statusCheck(resp);
       showAccount();
+      localStorage.setItem("user", username)
+      id("login-user").value = localStorage.getItem("user");
     } catch (err) {
       showMessage(err["message"]);
     }
@@ -1100,10 +1110,7 @@
    */
   async function getMyBalance() {
     try {
-      let username = document.cookie.split("=")[1];
-      let data = new FormData();
-      data.append("user", username);
-      let resp = await fetch("/balance", {method: "POST", body: data});
+      let resp = await fetch("/balance");
       resp = await resp.text();
       id("current-balance").textContent = "My Current Balance: $" + resp;
     } catch (err) {
@@ -1136,10 +1143,7 @@
    */
   async function history() {
     try {
-      let username = document.cookie.split("=")[1];
-      let data = new FormData();
-      data.append("user", username);
-      let resp = await fetch("/account/history", {method: "POST", body: data});
+      let resp = await fetch("/account/history");
       resp = await resp.json();
       showHistory(resp);
     } catch (err) {

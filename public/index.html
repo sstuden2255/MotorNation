@@ -48,7 +48,7 @@
         <button id="check-out-btn" class="hidden">Check out</button>
       </div>
       <div class="search-bar-container">
-        <input type="text" placeholder="Search for Vehicles, Types, Maximum Price..." name="search">
+        <input type="text" placeholder="Search for Vehicle Name or Type..." name="search">
         <button type="submit">Search</button>
       </div>
     </header>
@@ -164,6 +164,9 @@
           <button id="reset">Reset Filters</button>
         </section>
         <section id="vehicles-view">
+          <!--
+            All Vehicles Images & Pictures From https://wiki.rage.mp/index.php?title=Vehicles
+          -->
         </section>
       </section>
       <section id="vehicle-container" class="hidden">
@@ -178,7 +181,7 @@
           <p id="no-reviews">No Reviews Yet On This Vehicle</p>
           <button>Add a Review!</button>
           <form id="add-review" class="hidden">
-            <span>x</span>
+            <span class="close">x</span>
             <label for="rate">Your Rating (out of 5):</label>
             <select name="rate" id="rate">
               <option value="5" selected>5</option>
@@ -196,6 +199,7 @@
       </section>
       <section id="check-out-container" class="hidden">
         <h2>Checkout</h2>
+        <p>Confirm Your Purchase Below</p>
         <button id="check-out-back-btn">Back to Searching!</button>
         <section id="check-out-contents"></section>
         <button id="confirm-purchase-btn">Confirm Purchase</button>
@@ -214,9 +218,9 @@
         <p></p>
         <button>Back To Main Page</button>
       </section>
-
     </main>
     <footer>
+      <p>All Images From <a href="https://wiki.rage.mp/index.php?title=Vehicles">RAGE</a></p>
       <p>&copy; 2023 Simon Studen and Vincent Kao</p>
     </footer>
   </body>
