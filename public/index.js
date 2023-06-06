@@ -287,6 +287,8 @@
         data.append("purchase", JSON.stringify(cartObj));
         cartObj = {};
         window.localStorage.removeItem("cart");
+        id("cart-card-container").innerHTML = "";
+        cartEmptyToggles();
       } else {
         data.append("purchase", JSON.stringify(singlePurchase));
       }
