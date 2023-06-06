@@ -1032,7 +1032,7 @@
       let resp = await fetch("/login", {method: "POST", body: data});
       await statusCheck(resp);
       showAccount();
-      localStorage.setItem("user", username)
+      localStorage.setItem("user", username);
       id("login-user").value = localStorage.getItem("user");
     } catch (err) {
       showMessage(err["message"]);
@@ -1241,7 +1241,7 @@
     return document.querySelectorAll(selector);
   }
 
-  /**`
+  /**
    * Returns a new element with the given tag name.
    * @param {string} tagName - HTML tag name for new DOM element.
    * @returns {object} New DOM object for given HTML tag.
