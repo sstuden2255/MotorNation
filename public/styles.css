@@ -22,10 +22,8 @@ body {
 /* ------------------------------------------------------------------------- */
 header {
   background-color: black;
-  color: white;
   height: 12em;
   width: 100%;
-  padding: 10px;
   display: flex;
   flex-direction: column;
 }
@@ -44,8 +42,11 @@ nav ul {
   margin-right: 20px;
 }
 
-nav ul a {
+header, nav ul a {
   color: white;
+}
+
+nav ul a {
   text-shadow: 0 0 1em #ffe414;
 }
 
@@ -60,16 +61,21 @@ nav ul a:visited {
   border: 5px solid black;
 }
 
-.search-bar-container input[type="text"] {
+header, .search-bar-container input[type="text"] {
   padding: 10px;
-  border: none;
+}
+
+.search-bar-container input[type="text"] {
   font-size: 17px;
   width: 100%;
 }
 
+.search-bar-container input[type="text"], .search-bar-container button {
+  border: none;
+}
+
 .search-bar-container button {
   background-color: white;
-  border: none;
   border-left: 5px solid black;
   font-family: 'Dela Gothic One', cursive;
   cursor: pointer;
@@ -133,9 +139,7 @@ header li > a {
 /* main styles */
 /* ------------------------------------------------------------------------- */
 [id="main-container"] {
-  display: flex;
   flex-wrap: wrap;
-  align-items: flex-start;
   justify-content: space-evenly;
   width: 95%;
   padding: 40px;
@@ -146,12 +150,15 @@ header li > a {
   margin: 30px;
 }
 
+[id="main-container"], #filter-container, #type-filter, #price-filter {
+  display: flex;
+  align-items: flex-start;
+}
+
 #filter-container {
   background-color: #d4d4d4;
   text-align: left;
-  display: flex;
   flex-direction: column;
-  align-items: flex-start;
   align-self: flex-start;
   width: 20%;
   margin-top: 5%;
@@ -185,9 +192,7 @@ header li > a {
 }
 
 #type-filter, #price-filter {
-  display: flex;
   flex-direction: column;
-  align-items: flex-start;
   margin-bottom: 50px;
 }
 
@@ -314,7 +319,6 @@ main a:link, main a:visited, main a:hover, main a:active {
 #deposit-form form {
   height: 60%;
   margin: 10%;
-  color: white;
 }
 
 #deposit-form input {
@@ -329,7 +333,7 @@ main a:link, main a:visited, main a:hover, main a:active {
   background-color: rgba(0, 0, 0, 0.75);
 }
 
-.form-header, .form-container h2 {
+#deposit-form form, .form-header, .form-container h2, .form-container p {
   color: white;
 }
 
@@ -340,7 +344,6 @@ main a:link, main a:visited, main a:hover, main a:active {
 .form-container p {
   font-family: "Arial", "Helvetica", sans-serif;
   font-size: small;
-  color: white;
   margin: 20px 20px 0 0;
 }
 
@@ -391,9 +394,12 @@ main a:link, main a:visited, main a:hover, main a:active {
 }
 
 [id="cart-info"] {
-  display: flex;
   align-items: center;
   justify-content: space-around;
+}
+
+[id="cart-info"], #cart .cart-card, #cart .cart-card-info, #cart .cart-card-count-container {
+  display: flex;
 }
 
 #cart-info p {
@@ -411,7 +417,6 @@ main a:link, main a:visited, main a:hover, main a:active {
 }
 
 #cart .cart-card {
-  display: flex;
   width: 400px;
   height: 100px;
   padding-bottom: 10px;
@@ -425,9 +430,12 @@ main a:link, main a:visited, main a:hover, main a:active {
 }
 
 #cart .cart-card-info {
-  display: flex;
   flex-direction: column;
   align-items: flex-start;
+  justify-content: flex-start;
+}
+
+#cart .cart-card-info, #cart .cart-card-count-container  {
   justify-content: flex-start;
 }
 
@@ -445,9 +453,7 @@ main a:link, main a:visited, main a:hover, main a:active {
 }
 
 #cart .cart-card-count-container {
-  display: flex;
   align-items: center;
-  justify-content: flex-start;
 }
 
 #cart .count-btn {
