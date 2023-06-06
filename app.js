@@ -100,11 +100,12 @@ app.get("/vehicles/:vehicle_name", async function(req, res) {
 });
 
 // gets a lists of reviews of a vehicle
-app.get("/reviews/:vehicle_name", async function(req, res) {
+app.get("/reviews/all/:vehicle_name", async function(req, res) {
   const name = req.params["vehicle_name"];
   try {
     let query;
-    query = "SELECT user, rating, comment, date FROM reviews WHERE vehicle = ? ORDER BY date DESC";
+    query = "SELECT r.user, r.rating, r.comment, r.date FROM reviews r, vehicles v ";
+    query += "WHERE r.vehicle = ? AND r.vehicle = v.name ORDER BY r.date DESC";
     let db = await getDBConnection();
     let results = await db.all(query, name);
     await db.close();
@@ -118,7 +119,7 @@ app.get("/reviews/:vehicle_name", async function(req, res) {
 // posts a new review for a vehicle
 app.post("/reviews/new", async function(req, res) {
   const name = req.body["vehicle"];
-  const user = req.body["user"];
+  let user = req.cookies["username"];
   const rating = parseInt(req.body["rating"]);
   const comment = req.body["comment"];
   try {
@@ -137,7 +138,7 @@ app.post("/reviews/new", async function(req, res) {
       }
     } else {
       res.type("text");
-      res.status(400).send("Not enough / incorrect information provided.");
+      res.status(400).send("Not enough / incorrect information provided. Please Log In.");
     }
   } catch (err) {
     res.type("text");
@@ -189,7 +190,7 @@ app.post("/login", async function(req, res) {
       let results = await db.get(query, [username, password]);
       await db.close();
       if (results) {
-        const expirationDate = "Fri, 31 Dec 9999 23:59:59 GMT";
+        const expirationDate = "Fri, 31 Dec 9999, 23:59:59 GMT";
         res.cookie("username", username, {expires: new Date(expirationDate)});
         res.send("Logged In Seccussfully");
       } else {
@@ -204,8 +205,8 @@ app.post("/login", async function(req, res) {
 });
 
 // returns a user's balance
-app.post("/balance", async function(req, res) {
-  const user = req.body["user"];
+app.get("/balance", async function(req, res) {
+  let user = req.cookies["username"];
   res.type("text");
   try {
     if (user) {
@@ -228,7 +229,7 @@ app.post("/balance", async function(req, res) {
 
 // deposit into a user's account
 app.post("/deposit", async function(req, res) {
-  const user = req.body["user"];
+  let user = req.cookies["username"];
   const amount = parseInt(req.body["amount"]);
   res.type("text");
   try {
@@ -249,8 +250,8 @@ app.post("/deposit", async function(req, res) {
 });
 
 // returns the transaction history of a user
-app.post("/account/history", async function(req, res) {
-  const user = req.body["user"];
+app.get("/account/history", async function(req, res) {
+  let user = req.cookies["username"];
   try {
     if (user) {
       let query = "SELECT vehicle, date, code FROM transactions WHERE user = ? ORDER BY date DESC;";
@@ -272,8 +273,8 @@ app.post("/account/history", async function(req, res) {
 app.post("/purchase", async function(req, res) {
   res.type("text");
   try {
-    const user = req.body["user"];
-    const purchase = req.body["purchase"];
+    let user = req.cookies["username"];
+    let purchase = req.body["purchase"];
     if (user && purchase) {
       let budget = await checkBudget(user, purchase);
       if (budget) {
@@ -288,7 +289,7 @@ app.post("/purchase", async function(req, res) {
         res.status(400).send("You do not have enough money in your account to make the purchase!");
       }
     } else {
-      res.status(400).send("Not enough information to make purchase!");
+      res.status(400).send("Not enough information to make purchase! Please Log In!");
     }
   } catch (err) {
     res.status(500).send("Something on the server went wrong!");
