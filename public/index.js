@@ -1237,7 +1237,7 @@
     return document.querySelectorAll(selector);
   }
 
-  /**
+  /**`
    * Returns a new element with the given tag name.
    * @param {string} tagName - HTML tag name for new DOM element.
    * @returns {object} New DOM object for given HTML tag.
